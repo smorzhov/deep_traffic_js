@@ -1,9 +1,9 @@
 {
   "name": "deep-traffic",
-  "version": "0.0.0",
-  "description": "Small description for deep-traffic goes here",
+  "version": "0.0.1",
+  "description": "Gamified simulation of typical highway traffic",
   "license": "MIT",
-  "author": "",
+  "author": "smorzhov",
   "directories": {
     "doc": "doc",
     "test": "tests"
