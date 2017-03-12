@@ -1,5 +1,6 @@
 {
   "name": "deep-traffic",
   "dependencies": {
+    "bootstrap": "^3.3.7"
   }
 }
