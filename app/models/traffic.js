@@ -12,7 +12,7 @@ export default class Traffic {
      */
     constructor(numberOfCars) {
         this._numberOfCars = numberOfCars;
-        this._cars = this._generateCars();
+        this._cars = this._generateCarsMap();
         this._traffic = this._generateCarPositions();
     }
 
@@ -28,11 +28,11 @@ export default class Traffic {
      * @private
      * @return {Map} Map with generated cars
      */
-    _generateCars() {
+    _generateCarsMap() {
         let cars = new Map();
         cars.set(1, new Car(true, 60, new Direction(1, 0, 0)));
         for (let i = 0; i < this._numberOfCars; i++) {
-            cars.add(i + 2, new Car(false, getRandomInt(40, 110), Direction.generate(0.5)));
+            cars.add(i + 2, new Car(false, getRandomInt(Car.MIN_SPEED, Car.MAX_SPEED), Direction.generate(0.6)));
         }
         return cars;
     }
