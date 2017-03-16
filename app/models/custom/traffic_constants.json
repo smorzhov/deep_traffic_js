@@ -1,0 +1,15 @@
+{
+    "maximumNumberOfLanes": 20,
+    "patches": {
+        "ahead": {
+            "minimum": 50,
+            "maximum": 1000
+        },
+        "behind": {
+            "minimum": 10,
+            "maximum": 200
+        }
+    },
+    "straightProbability": 0.6,
+    "safeDistance": 5
+}
