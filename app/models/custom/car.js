@@ -1,6 +1,8 @@
 'use strinct';
 
 import Direction from './direction';
+import Speed from './speed';
+import { getRandomInt } from './../../utils/random';
 
 export default class Car {
     /**
@@ -8,7 +10,7 @@ export default class Car {
      * @constructor
      * @throws Will throw the error if the given parameters have inappropriate types
      * @param {boolean} isUser shows whether the car is user's of not  
-     * @param {number} speed car's speed 
+     * @param {Speed} speed car's speed 
      * @param {Direction} direction direction distribution 
      */
     constructor(isUser, speed, direction) {
@@ -16,31 +18,15 @@ export default class Car {
             throw new Error(`isUser must be boolean. Got ${isUser} instead!`);
         }
         this._isUser = isUser;
-        this._speed = this._originalSpeed = parseInt(speed);
-        if (isNaN(this._speed)) {
-            throw new Error(`speed must be a positive number. Got ${speed} instead!`);
+        if (!(speed instanceof Speed)) {
+            throw new Error('speed must be instace of Speed!');
         }
-        if (this._speed < this.MIN_SPEED) {
-            this._speed = this.MIN_SPEED;
-        }
-        if (this._speed > this.MAX_SPEED) {
-            this._speed = this.MAX_SPEED;
-        }
+        this._speed = this._originalSpeed = speed;
         if (!(direction instanceof Direction)) {
             throw new Error(`direction must be instance of Direction`);
         }
         this._direction = direction;
     }
-
-    /**
-     * Minimum allowed speed 
-     */
-    static get MIN_SPEED() { return 40; }
-
-    /**
-     * Maximum allowed speed
-     */
-    static get MAX_SPEED() { return 110; }
 
     get isUser() { return this._isUser; }
 
@@ -63,16 +49,15 @@ export default class Car {
 
     /**
      * It changes the car's speed
-     * @param {number} speed the new speed. If the speed is undefined, the original speed will be restored.
+     * @param {Speed} speed the new speed. If the speed is undefined, the original speed will be restored.
      * @return {boolean} Returns true, if the car's speed has been changed and false - otherwise.
      */
-    changeSpeed(speed) {
-        if (speed === undefined) {
+    changeSpeed(s) {
+        if (s === undefined) {
             this._speed = this._originalSpeed;
             return true;
         }
-        let s = parseInt(speed);
-        if (isNaN(s) || s < this.MIN_SPEED || s > this.MAX_SPEED || s === this._speed) {
+        if (!(s instanceof Speed) || s.speed === this._speed) {
             return false;
         }
         this._speed = s;

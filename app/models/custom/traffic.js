@@ -2,6 +2,7 @@
 
 import Car from './car';
 import Direction from './direction';
+import Speed from './speed';
 import { getRandomInt } from './../../utils/random';
 import { readFileSync } from './../../utils/io';
 
@@ -35,9 +36,9 @@ export default class Traffic {
          * and cars that are ahead - positive distance.
          */
         this._usersCar = {
-            car: new Car(true, Car.MAX_SPEED, new Direction(1, 0, 0)),
+            car: new Car(true, Speed.MAXIMUM, new Direction(1, 0, 0)),
             lane: getRandomInt(0, this._numberOfLanes),
-            distance: 0
+            patch: 0
         };
         this._traffic = this._generateCars(
             this._patchesAhead < this.MINIMUM_PATCHES_AHEAD ? this.MINIMUM_PATCHES_AHEAD : this._patchesAhead,
@@ -66,9 +67,12 @@ export default class Traffic {
     get STRAIGHT_PROBABILITY() { return this._constants.straightProbability; }
 
     /**
-    * It updates generated traffic
-    */
+     * It updates generated traffic
+     */
     update() {
+        this._traffic.forEach((lane, laneNumber) => {
+            
+        });
         //TODO
     }
 
@@ -113,21 +117,50 @@ export default class Traffic {
      * @private
      * @param {number} patchesAhead patches ahead the user's car
      * @param {number} patchesBehind patches behind the user's car
-     * @return {Array} Returns a jagged array with generated cars
+     * @return {Array} Returns an array of sets with generated cars
      */
     _generateCars(patchesAhead, patchesBehind) {
         let traffic = new Array(this._numberOfLanes);
-        //let min = (patchesAhead + patchesBehind) / (5 * this.SAFE_DISTANCE) + 1;
-        //let max = (patchesAhead + patchesBehind) / this.SAFE_DISTANCE - min;
+        let maximumDistance = (patchesAhead + patchesBehind) / 3;
         traffic.forEach((lane, laneNumber) => {
-            lane = [];
-            //TODO: adding cars
-            lane.push({
-                car: new Car(false, getRandomInt(Car.MIN_SPEED, Car.MAX_SPEED), Direction.generate(this.STRAIGHT_PROBABILITY)),
+            lane = new Array(patchesAhead + patchesBehind); 
+            lane.add({
+                car: new Car(false, Speed.generate(), Direction.generate(this.STRAIGHT_PROBABILITY)),
                 lane: laneNumber,
-                distance: getRandomInt(patchesAhead, patchesAhead - this.SAFE_DISTANCE * i)
+                distance: getRandomInt(patchesAhead, patchesAhead - maximumDistance)
             });
+            let stop = false;
+            while (!stop) {
+                let max = lane[lane.length - 1].distance - this.SAFE_DISTANCE;
+                let min = max - maximumDistance;
+                if (laneNumber === this._usersCar.lane && this._usersCar.distance < max && this._usersCar.distance > min) {
+                    /**We're adding the user's car */
+                    lane.add(this._usersCar);
+                    continue;
+                }
+                if (min < -patchesBehind) {
+                    min = -patchesBehind;
+                    stop = true;
+                }
+                let distance = getRandomInt(max, min);
+                lane.add({
+                    car: new Car(false, Speed.generate(), Direction.generate(this.STRAIGHT_PROBABILITY)),
+                    lane: laneNumber,
+                    distance: distance
+                });
+            }
         });
         return traffic;
+    }
+
+    /**
+     * It pushes the car into the array
+     * @param {Array} array array of cars
+     * @param {number} id car's id 
+     * @param {number} lane lane number
+     * @param {number} patch patch number
+     */
+    _pushCar(array, id, lane, patch) {
+
     }
 }
