@@ -1,0 +1,36 @@
+{
+    "speedPatchRatio": [
+        {
+            "speed": 50,
+            "patches": 0.5
+        },
+        {
+            "speed": 70,
+            "patches": 1
+        },
+        {
+            "speed": 90,
+            "patches": 1.5
+        },
+        {
+            "speed": 110,
+            "patches": 2
+        }
+    ],
+    "traffic": {
+        "numberOfLanes": 7,
+        "patches": {
+            "ahead": {
+                "minimum": 50,
+                "maximum": 1000
+            },
+            "behind": {
+                "minimum": 10,
+                "maximum": 200
+            }
+        },
+        "straightProbability": 0.6,
+        "carSize": 4,
+        "safeDistance": 3
+    }
+}

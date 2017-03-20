@@ -2,40 +2,75 @@
 
 import { getRandomInt } from './../../utils/random';
 
-export default class Speed {
+export class Speed {
     /**
      * Speed constructor
+     * @constructor
      * @param {number} speed speed 
      * @param {number} patches patches the car passes by in one unit of time 
      */
     constructor(speed, patches) {
-        this._speed = typeof speed === 'number' && speed >= 40 && speed <= 110 ? speed : 40;
+        this._speed = typeof speed === 'number' && speed >= 0 && speed <= 110 ? speed : 0;
         this._patches = typeof patches === 'number' && patches >= 0 ? patches : 0;
     }
 
-    static get MAXIMUM() { return new Speed(110, 2); }
-
-    static get MINIMUM() { return new Speed(50, 0.5); }
-
     get speed() { return this._speed; }
 
-    set speed(speed) { this._speed = Number(speed); }
-
     get patches() { return this._patches; }
+}
+
+export default class SpeedGenerator {
+    /**
+     * Speed generator constructor
+     * @constructor
+     * @throws It throws error if speedPatchesRatio has incorrect data
+     * @param {Array} speedPatchesRatio array of speed patches ratio objects
+     */
+    constructor(speedPatchesRatio) {
+        if (!this._isSpeedPatchesRatioValid(speedPatchesRatio)) {
+            throw new Error('speedPatchRatio has incorrect data!');
+        } else {
+            this._speedPatchesRatio = speedPatchesRatio.sort((a, b) => {
+                return a.speed - b.speed;
+            });
+        }
+    }
+
+    get MAXIMUM_SPEED() {
+        return new Speed(
+            this._speedPatchesRatio[this._speedPatchesRatio.length - 1].speed,
+            this._speedPatchesRatio[this._speedPatchesRatio.length - 1].patches
+        );
+    }
+
+    get MINIMUM_SPEED() {
+        return new Speed(
+            this._speedPatchesRatio[0].speed,
+            this._speedPatchesRatio[0].patches
+        );
+    }
 
     /**
      * It generates car's speed
-     * @static
-     * @return {Speed} car's speed
+     * @return {Speed} Returns speed object
      */
-    static generate() {
-        let speed = [
-            { speed: 50, patches: 0.5 },
-            { speed: 70, patches: 1 },
-            { speed: 90, patches: 1.5 },
-            { speed: 110, patches: 2 },
-        ];
-        let i = getRandomInt(0, speed.length);
-        return new Speed(speed[i].speed, speed[i].patches);
+    generate() {
+        let i = getRandomInt(0, this._speedPatchesRatio.length);
+        return new Speed(this._speedPatchesRatio[i].speed, this._speedPatchesRatio[i].patches);
+    }
+
+    /**
+     * It validates speedPatchesRatio object
+     * @param {Array} speedPatchesRatio array of speed patches ratio objects
+     * @return {boolean} Returns true, if speedPatchesRatio is correct and false - otherwise
+     */
+    _isSpeedPatchesRatioValid(speedPatchesRatio) {
+        if (!Array.isArray(speedPatchesRatio)) {
+            return false;
+        }
+        speedPatchesRatio.every(value => {
+            return typeof value.speed === 'number' && value.speed > 0 && value.speed < 110 &&
+                typeof value.patches === 'number' && value.patches > 0;
+        });
     }
 }

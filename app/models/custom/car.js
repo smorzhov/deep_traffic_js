@@ -1,8 +1,7 @@
 'use strinct';
 
 import Direction from './direction';
-import Speed from './speed';
-import { getRandomInt } from './../../utils/random';
+import { Speed } from './speed';
 
 export default class Car {
     /**
