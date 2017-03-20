@@ -2,7 +2,7 @@
 
 import Car from './car';
 import Direction from './direction';
-import SpeedGenerator from './speed';
+import SpeedGenerator from './speedGenerator';
 import { getRandomInt } from './../../utils/random';
 import { readFileSync } from './../../utils/io';
 
@@ -71,14 +71,15 @@ export default class Traffic {
      */
     update() {
         /**
-         * With big arrays it is much faster that
-         * let state = new Array(size);
+         * TODO. 
+         * На основе одномерного массива обновить расположение машин в одномерном массиве и в Map.
+         * Если хотя бы часть машины скрылась за пределами экрана, то машина удаляется из массива и из Map.
+         * Добавление новых машин должно осуществляться случайным образом. 
+         * Если скорость новой машины меньше, чем скорость пользовательской машины, то новая добавляется сверху, 
+         * так как далее она будет ехать вниз. 
+         * Если скорость новой машины больше скорости пользовательской машины, то новая машина добавляется внизу, 
+         * так как далее она будет ехать вверх. 
          */
-        this._state = [];
-        this._state.length = this.NUMBER_OF_LANES *
-            (this._patchesAhead < this.MINIMUM_PATCHES_AHEAD ? this.MINIMUM_PATCHES_AHEAD : this._patchesAhead +
-                this._patchesBehind < this.MINIMUM_PATCHES_BEHIND ? this.MINIMUM_PATCHES_BEHIND : this._patchesBehind);
-        //TODO
     }
 
     /**
@@ -131,6 +132,10 @@ export default class Traffic {
      * @return {Array} Returns an array contains Map with generated cars an array represents the current state
      */
     _generateCars(patchesAhead, patchesBehind) {
+        /**
+         * With big arrays it is much faster that
+         * let state = new Array(size);
+         */
         let state = [];
         state.length = (this._patchesAhead + this._patchesBehind) * this.NUMBER_OF_LANES;
         let traffic = new Map();

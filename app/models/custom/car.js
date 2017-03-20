@@ -1,7 +1,7 @@
 'use strinct';
 
 import Direction from './direction';
-import { Speed } from './speed';
+import Speed from './speed';
 
 export default class Car {
     /**
