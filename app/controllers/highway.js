@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import Traffic from './../models/traffic';
+import Traffic from './../models/custom/traffic';
 
 export default Ember.Controller.extend({
     init: function() {

@@ -11,37 +11,13 @@ export default class Traffic {
      * Highway traffic constructor
      * @constructor
      * @throws It throws error if the given parameters have incorrect data or if traffic_constant.json file has not been found.
-     * @param {number} patchesAhead patches ahead the user's car
-     * @param {number} patchesBehind patches behind the user's car
      */
-    constructor(patchesAhead, patchesBehind) {
-        this._patchesAhead = parseInt(patchesAhead);
-        this._patchesBehind = parseInt(patchesBehind);
-        if (this._isParamsValid()) {
-            let message = 'Error while creating traffic:\n';
-            message += `  patchesAhead must be an integer between 1 and ${this.MAXIMUM_PATCHES_AHEAD}. Got ${patchesAhead}\n`;
-            message += `  patchesBehind must be an integer between 1 and ${this.MAXIMUM_PATCHES_BEHIND}. Got ${patchesBehind}\n`;
-            throw new Error(message);
-        }
+    constructor() {
         this._constants = readFileSync('./constants.json', 'utf8');
         if (!this._isTrafficConstantsValid(this._constants.traffic)) {
             throw new Error('constants.json has incorrect traffic data!');
         }
         this._speedGenerator = new SpeedGenerator(this._constants.speedPatchRatio);
-        /**
-         * User's car will be like a center of coordinate system where X-axis means lanes and Y-axis means distance in meters.
-         * User's car distance must always be equal to 0. Therefore cars that are behind user's car will have negative distance
-         * and cars that are ahead - positive distance.
-         */
-        this._usersCar = {
-            car: new Car(true, this._speedGenerator.MAXIMUM_SPEED, new Direction(1, 0, 0)),
-            lane: getRandomInt(0, this.NUMBER_OF_LANES),
-            patch: 0
-        };
-        [this._cars, this._state] = this._generateCars(
-            this._patchesAhead < this.MINIMUM_PATCHES_AHEAD ? this.MINIMUM_PATCHES_AHEAD : this._patchesAhead,
-            this._patchesBehind < this.MINIMUM_PATCHES_BEHIND ? this.MINIMUM_PATCHES_BEHIND : this._patchesBehind
-        );
     }
 
     get NUMBER_OF_LANES() { return this._constants.traffic.numberOfLanes; }
@@ -67,9 +43,39 @@ export default class Traffic {
     get CAR_SIZE() { return this._constants.traffic.carSize; }
 
     /**
-     * It updates generated traffic and added new cars if necessary
+     * It generates traffic
+     * @param {number} patchesAhead patches ahead the user's car
+     * @param {number} patchesBehind patches behind the user's car
+     */
+    generate(patchesAhead = 1, patchesBehind = 0) {
+        this._patchesAhead = parseInt(patchesAhead);
+        this._patchesBehind = parseInt(patchesBehind);
+        this._validateParams();
+        /**
+         * User's car will be like a center of coordinate system where X-axis means lanes and Y-axis means distance in meters.
+         * User's car distance must always be equal to 0. Therefore cars that are behind user's car will have negative distance
+         * and cars that are ahead - positive distance.
+         */
+        this._usersCar = {
+            car: new Car(true, this._speedGenerator.MAXIMUM_SPEED, new Direction(1, 0, 0)),
+            lane: getRandomInt(0, this.NUMBER_OF_LANES),
+            patch: 0
+        };
+        [this._cars, this._state] = this._generateCars(
+            this._patchesAhead < this.MINIMUM_PATCHES_AHEAD ? this.MINIMUM_PATCHES_AHEAD : this._patchesAhead,
+            this._patchesBehind < this.MINIMUM_PATCHES_BEHIND ? this.MINIMUM_PATCHES_BEHIND : this._patchesBehind
+        );
+    }
+
+    /**
+     * It updates generated traffic and added new cars if necessary. 
+     * @return {Array} Returns state
      */
     update() {
+        if (this._usersCar === undefined || this._cars === undefined || this._state === undefined) {
+            this.generate();
+            return this.state;
+        }
         /**
          * TODO. 
          * На основе одномерного массива обновить расположение машин в одномерном массиве и в Map.
@@ -83,14 +89,22 @@ export default class Traffic {
     }
 
     /**
-     * It checks the parameters
+     * It validates the params. If they have incorrect value it assygnes default values.
      * @private
-     * @return {boolean} Returns true, if the parameters are correct and false - otherwise
      */
-    _isParamsValid() {
-        return isNaN(this.NUMBER_OF_LANES) || this.NUMBER_OF_LANES < 1 || this.NUMBER_OF_LANES > this.MAXIMUM_NUMBER_OF_LANES ||
-            isNaN(this._patchesAhead) || this._patchesAhead < 1 || this._patchesAhead > this.MAXIMUM_PATCHES_AHEAD ||
-            isNaN(this._patchesBehind) || this._patchesBehind < 1 || this._patchesBehind > this.MAXIMUM_PATCHES_BEHIND;
+    _validateParams() {
+        if (isNaN(this.patchesAhead) || this._patchesAhead < 1) {
+            this.patchesAhead = 1;
+        }
+        if (isNaN(this._patchesBehind) || this._patchesBehind < 1) {
+            this._patchesBehind = 0;
+        }
+        if (this._patchesAhead > this.MAXIMUM_PATCHES_AHEAD) {
+            this._patchesAhead = this.MAXIMUM_PATCHES_AHEAD;
+        }
+        if (this._patchesBehind > this.MAXIMUM_PATCHES_BEHIND) {
+            this._patchesBehind = this.MAXIMUM_PATCHES_BEHIND;
+        }
     }
 
     /**
@@ -112,7 +126,7 @@ export default class Traffic {
 
         return !(traffic === undefined || traffic.patches === undefined ||
             typeof traffic.numberOfLanes !== 'number' ||
-            traffic.numberOfLanes < 0 || traffic.maximumNumberOfLanes > 100 |
+            traffic.numberOfLanes < 1 || traffic.maximumNumberOfLanes > 100 |
             typeof traffic.straightProbability !== 'number' ||
             traffic.straightProbability < 0 || traffic.straightProbability > 1 ||
             typeof traffic.carSize !== 'number' ||
