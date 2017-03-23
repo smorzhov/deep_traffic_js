@@ -1,6 +1,6 @@
 'use strict';
 
-import { getRandomArbitrary } from './../../utils/random';
+import { getRandomArbitrary } from './utils/random';
 
 export default class Direction {
     /**

@@ -3,8 +3,8 @@
 import Car from './car';
 import Direction from './direction';
 import SpeedGenerator from './speedGenerator';
-import { getRandomInt } from './../../utils/random';
-import { readFileSync } from './../../utils/io';
+import { getRandomInt } from './utils/random';
+import { readFileSync } from './utils/io';
 
 export default class Traffic {
     /**
@@ -151,44 +151,45 @@ export default class Traffic {
          * let state = new Array(size);
          */
         let state = [];
-        state.length = (this._patchesAhead + this._patchesBehind) * this.NUMBER_OF_LANES;
+        state.length = this.NUMBER_OF_LANES;
         let traffic = new Map();
         let maximumDistance = (patchesAhead + patchesBehind) / 3;
-        let i = 10;
-        for (let laneNumber = 0; laneNumber < this.NUMBER_OF_LANES; laneNumber++) {
-            let distance;
-            let stop = false;
-            while (!stop) {
-                let max = distance === undefined ?
-                    getRandomInt(patchesAhead, patchesAhead - maximumDistance) - this.SAFE_DISTANCE :
-                    distance - this.SAFE_DISTANCE;
-                let min = max - maximumDistance;
-                if (laneNumber === this._usersCar.lane && this._usersCar.distance < max && this._usersCar.distance > min) {
-                    /**We're adding the user's car */
-                    traffic.set('user', this._usersCar);
-                    this._putCarIntoStateArray(state, 'user', this._usersCar.lane, this._usersCar.patch);
-                    distance = 0;
-                    continue;
-                }
-                if (min < -patchesBehind + this.CAR_SIZE) {
-                    min = -patchesBehind + this.CAR_SIZE;
-                    stop = true;
-                }
-                if (Math.abs(max - min) <= this.CAR_SIZE) {
-                    break;
-                }
-                distance = getRandomInt(max, min);
-                this._putCarIntoStateArray(state, i, laneNumber, distance);
-                traffic.set(
-                    i++,
-                    {
-                        car: new Car(false, this._speedGenerator.generate(), Direction.generate(this.STRAIGHT_PROBABILITY)),
-                        lane: laneNumber,
-                        distance: distance
+        let id = 10;
+        state.forEach((lane, laneNumber) => {
+            lane = [];
+            lane.length = patchesAhead + patchesBehind;
+            if (laneNumber === this._usersCar.lane) {
+                /**We're adding the user's car */
+                traffic.set('user', this._usersCar);
+                this._putCarIntoStateArray(state, 'user', this._usersCar.lane, this._usersCar.patch);
+            } else {
+                let distance;
+                let stop = false;
+                while (!stop) {
+                    let max = distance === undefined ?
+                        getRandomInt(patchesAhead, patchesAhead - maximumDistance) - this.SAFE_DISTANCE :
+                        distance - this.SAFE_DISTANCE;
+                    let min = max - maximumDistance;
+                    if (min < -patchesBehind + this.CAR_SIZE) {
+                        min = -patchesBehind + this.CAR_SIZE;
+                        stop = true;
                     }
-                );
+                    if (Math.abs(max - min) <= this.CAR_SIZE) {
+                        break;
+                    }
+                    distance = getRandomInt(max, min);
+                    this._putCarIntoStateArray(state, id, laneNumber, distance);
+                    traffic.set(
+                        id++,
+                        {
+                            car: new Car(false, this._speedGenerator.generate(), Direction.generate(this.STRAIGHT_PROBABILITY)),
+                            lane: laneNumber,
+                            distance: distance
+                        }
+                    );
+                }
             }
-        }
+        });
         return [traffic, state];
     }
 
@@ -202,18 +203,7 @@ export default class Traffic {
      */
     _putCarIntoStateArray(state, carId, lane, patch) {
         for (let i = 0; i < this.CAR_SIZE; i++) {
-            state[this._stateIndexOf(patch - i, lane)] = carId;
+            state[patch - i][lane] = carId;
         }
-    }
-
-    /**
-     * It converts (patch; lane) coordinate into 1d state coordinate
-     * @private
-     * @param {number} patch patch number 
-     * @param {number} lane lane number
-     * @return {number} Returns 1d state coordinate
-     */
-    _stateIndexOf(patch, lane) {
-        return patch * this.NUMBER_OF_LANES + lane;
     }
 }
