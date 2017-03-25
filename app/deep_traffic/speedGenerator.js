@@ -57,4 +57,14 @@ export default class SpeedGenerator {
                 typeof value.patches === 'number' && value.patches > 0;
         });
     }
+
+    /**
+     * По скорости возвращает количество патчей
+     * @param {number} speed скорость
+     * @return {number} количество патчей
+     */
+    getPatchesToMove(speed) {
+        let ratio = this._speedPatchesRatio.find(ratio => { return ratio.speed === speed; });
+        return ratio === undefined ? undefined : ratio.patches; 
+    }
 }
