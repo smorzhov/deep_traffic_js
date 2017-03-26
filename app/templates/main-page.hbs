@@ -1,19 +1,34 @@
 <div class="container">
     <div class="row">
-        <div class="col-lg-2 col-md-2 col-sm-2">
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
             There will be animation
         </div>
-        <div class="col-lg-10 col-md-10 col-sm-10">
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
             <h2>Deep traffic</h2>
             <div>
-                <textarea class="">User's code</textarea>
+                <div id="container" style="width: 100%; height: 25em; border:1px solid grey; margin-bottom: 2em"></div>
+
+                <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
+                <script>
+                    require.config({ paths: { 'vs': '../node_modules/monaco-editor/min/vs' }});
+                    require(['vs/editor/editor.main'], function() {
+                        var editor = monaco.editor.create(document.getElementById('container'), {
+                            value: [
+                                'function x() {',
+                                '\tconsole.log("Hello world!");',
+                                '}'
+                            ].join('\n'),
+                            language: 'javascript'
+                        });
+                    });
+                </script>
             </div>
             <div class="row">
-                <div class="col-lg-5 col-md-5 col-sm-5">
-                    <input type="button" value="Apply code / Reset net">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align: start">
+                    <input type="button" value="Apply code / Reset net" class="btn btn-primary">
                 </div>
-                <div class="col-lg-5 col-md-5 col-sm-5">
-                    <input type="button" value="Subbmit model to competition">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align: end">
+                    <input type="button" value="Subbmit model to competition" class="btn btn-primary">
                 </div>
             </div>
         </div>
