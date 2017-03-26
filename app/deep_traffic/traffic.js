@@ -350,7 +350,7 @@ export default class Traffic {
     }
 
     _getLines(){
-      return ( this._lines > NUMBER_OF_LANES || this._lines === undefined )? this._lines > NUMBER_OF_LANES : this._lines;
+      return ( this._lines > this.NUMBER_OF_LANES || this._lines === undefined )? this.NUMBER_OF_LANES : this._lines;
     }
 
     _getPatchesAhead() {
@@ -358,7 +358,7 @@ export default class Traffic {
     }
 
     _getPatchesBehind() {
-      this._patchesBehind < this.MINIMUM_PATCHES_BEHIND ?  this._patchesBehind : this.MINIMUM_PATCHES_BEHIND;
+      return this._patchesBehind < this.MINIMUM_PATCHES_BEHIND ?  this._patchesBehind : this.MINIMUM_PATCHES_BEHIND;
     }
     _trafficToLine(){
       let userLines = this._usersCar.lane;
