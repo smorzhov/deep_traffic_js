@@ -68,7 +68,7 @@ export default class Traffic {
     }
 
     /**
-     * It updates generated traffic and added new cars if necessary. 
+     * It updates generated traffic and added new cars if necessary.
      * @return {Array} Returns state
      */
     update() {
@@ -77,14 +77,14 @@ export default class Traffic {
             return this.state;
         }
         /**
-         * TODO. 
+         * TODO.
          * На основе одномерного массива обновить расположение машин в одномерном массиве и в Map.
          * Если хотя бы часть машины скрылась за пределами экрана, то машина удаляется из массива и из Map.
-         * Добавление новых машин должно осуществляться случайным образом. 
-         * Если скорость новой машины меньше, чем скорость пользовательской машины, то новая добавляется сверху, 
-         * так как далее она будет ехать вниз. 
-         * Если скорость новой машины больше скорости пользовательской машины, то новая машина добавляется cнизу, 
-         * так как далее она будет ехать вверх. 
+         * Добавление новых машин должно осуществляться случайным образом.
+         * Если скорость новой машины меньше, чем скорость пользовательской машины, то новая добавляется сверху,
+         * так как далее она будет ехать вниз.
+         * Если скорость новой машины больше скорости пользовательской машины, то новая машина добавляется cнизу,
+         * так как далее она будет ехать вверх.
          */
         this._updateTraffic();
     }
@@ -117,7 +117,7 @@ export default class Traffic {
     _isTrafficConstantsValid(traffic) {
         /**
          * It checks patch object
-         * @param {Object} patch patch object 
+         * @param {Object} patch patch object
          * @returns {boolean} Returns true, if the patch object has correct data and false - otherwise.
          */
         function isPatchValid(patch) {
@@ -197,10 +197,10 @@ export default class Traffic {
     /**
      * It puts the car into the state array
      * @private
-     * @param {Array} state array represents current state 
-     * @param {any} carId car id 
-     * @param {number} lane car's lane number 
-     * @param {number} patch car's patch number 
+     * @param {Array} state array represents current state
+     * @param {any} carId car id
+     * @param {number} lane car's lane number
+     * @param {number} patch car's patch number
      */
     _putCarIntoStateArray(state, carId, lane, patch) {
         for (let i = 0; i < this.CAR_SIZE; i++) {
@@ -209,11 +209,11 @@ export default class Traffic {
     }
 
     /**
-     * 
+     *
      */
     _updateTraffic() {
         //Ты нигде это не заполняешь.
-        let alreadyUpdatedCars = new Map(); 
+        let alreadyUpdatedCars = new Map();
         let patchesCounter = this._patchesAhead + this._patchesBehind;
         let prevCarID = 0;
         // идем по столбцам
@@ -254,7 +254,7 @@ export default class Traffic {
             // удаляем
             return;
         }
-        // сначала в любом случае движемся вперед на количество патчей, 
+        // сначала в любом случае движемся вперед на количество патчей,
         // на которое можно сдвинуться
         let patchesToMove = this.getPatchesToMove(IDObject.car.speed);
         if (patchesToMove > patchesFree) {
@@ -348,4 +348,32 @@ export default class Traffic {
             }
         }
     }
+
+    _getLines(){
+      return ( this._lines > NUMBER_OF_LANES || this._lines === undefined )? this._lines > NUMBER_OF_LANES : this._lines;
+    }
+
+    _getPatchesAhead() {
+      return this._patchesAhead < this.MINIMUM_PATCHES_AHEAD ? this._patchesAhead : this.MINIMUM_PATCHES_AHEAD;
+    }
+
+    _getPatchesBehind() {
+      this._patchesBehind < this.MINIMUM_PATCHES_BEHIND ?  this._patchesBehind : this.MINIMUM_PATCHES_BEHIND;
+    }
+    _trafficToLine(){
+      let userLines = this._usersCar.lane;
+      let linesCount = this._getLines();
+      let linesBegin =  this._usersCar.lane - linesCount < 0 ? 0 : this._usersCar.lane - linesCount;
+      let linesEnd = this._usersCar.lane + linesCount > this.NUMBER_OF_LANES ? this.NUMBER_OF_LANES : this._usersCar.lane + linesCount;
+      let ahead = this._getPatchesAhead();
+      let behind = this._getPatchesBehind();
+      let trafficAsLine = [];
+      for( let j = linesBegin; j < linesEnd; j++ ){
+        for( let i = ahead; i < behind; i++) {
+          trafficAsLine[j * (ahead + behind) + i] = this._state[i][j];
+        }
+      }
+      return trafficAsLine;
+    }
+
 }
