@@ -349,31 +349,31 @@ export default class Traffic {
         }
     }
 
-    _getLines(){
-      return ( this._lines > this.NUMBER_OF_LANES || this._lines === undefined )? this.NUMBER_OF_LANES : this._lines;
+    _getLines() {
+        return (this._lines > this.NUMBER_OF_LANES || this._lines === undefined) ? this.NUMBER_OF_LANES : this._lines;
     }
 
     _getPatchesAhead() {
-      return this._patchesAhead < this.MINIMUM_PATCHES_AHEAD ? this._patchesAhead : this.MINIMUM_PATCHES_AHEAD;
+        return this._patchesAhead < this.MINIMUM_PATCHES_AHEAD ? this._patchesAhead : this.MINIMUM_PATCHES_AHEAD;
     }
 
     _getPatchesBehind() {
-      return this._patchesBehind < this.MINIMUM_PATCHES_BEHIND ?  this._patchesBehind : this.MINIMUM_PATCHES_BEHIND;
+        return this._patchesBehind < this.MINIMUM_PATCHES_BEHIND ? this._patchesBehind : this.MINIMUM_PATCHES_BEHIND;
     }
-    _trafficToLine(){
-      let userLines = this._usersCar.lane;
-      let linesCount = this._getLines();
-      let linesBegin =  this._usersCar.lane - linesCount < 0 ? 0 : this._usersCar.lane - linesCount;
-      let linesEnd = this._usersCar.lane + linesCount > this.NUMBER_OF_LANES ? this.NUMBER_OF_LANES : this._usersCar.lane + linesCount;
-      let ahead = this._getPatchesAhead();
-      let behind = this._getPatchesBehind();
-      let trafficAsLine = [];
-      for( let j = linesBegin; j < linesEnd; j++ ){
-        for( let i = ahead; i < behind; i++) {
-          trafficAsLine[j * (ahead + behind) + i] = this._state[i][j];
+    _trafficToLine() {
+        let userLines = this._usersCar.lane;
+        let linesCount = this._getLines();
+        let linesBegin = this._usersCar.lane - linesCount < 0 ? 0 : this._usersCar.lane - linesCount;
+        let linesEnd = this._usersCar.lane + linesCount > this.NUMBER_OF_LANES ? this.NUMBER_OF_LANES : this._usersCar.lane + linesCount;
+        let ahead = this._getPatchesAhead();
+        let behind = this._getPatchesBehind();
+        let trafficAsLine = [];
+        for (let j = linesBegin; j < linesEnd; j++) {
+            for (let i = ahead; i < behind; i++) {
+                trafficAsLine[j * (ahead + behind) + i] = this._state[i][j];
+            }
         }
-      }
-      return trafficAsLine;
+        return trafficAsLine;
     }
 
 }
