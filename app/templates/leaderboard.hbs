@@ -1,5 +1,9 @@
 <div>
     <h2>Leaderboard</h2>
+    {{#each model as |item|}} 
+        {{item.user}}
+        {{item.mph}}
+    {{/each}}
     <div>
         Table with score
     </div>
