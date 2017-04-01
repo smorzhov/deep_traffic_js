@@ -209,11 +209,6 @@ export default class Traffic {
             state[patch - i][lane] = carId;
         }
     }
-
-    _getLines(){
-      return ( this._lanes > this.NUMBER_OF_LANES || this._lanes === undefined )? this.NUMBER_OF_LANES : this._lanes;
-    }
-
     _getPatchesAheadToLine() {
       return this._patchesAhead < this.MINIMUM_PATCHES_AHEAD ? this._patchesAhead : this.MINIMUM_PATCHES_AHEAD;
     }
@@ -446,7 +441,7 @@ export default class Traffic {
         this._moveBehind( patch, lane, curPatchesSpeed - userPatchesSpeed, carID );
       }
      }
-    _updateTraffic(){
+    _updateTraffic() {
       // TODO
       // СДВИНУТЬ МАШИНУ ПОЛЬЗОВАТЕЛЯ
       // получаем границы для массива
@@ -456,21 +451,33 @@ export default class Traffic {
       let freePatchesToMove = 0;
       // машины, которые уже обновили
       this._alreadyUpdatedCars = new Map();
-      for( let j = 0; j < this.NUMBER_OF_LANES; j++ ){
-        for( let i = patches_ahead; i > patches_behind; i-- ){
+      for (let j = 0; j < this.NUMBER_OF_LANES; j++) {
+        for (let i = patches_ahead; i > patches_behind; i--) {
           //текущая машина, которую будем обновлять
           let curId = this._state[i][j];
-          if( curId === 0 || curId === undefined || curId === 'user' ){
+          if (curId === 0 || curId === undefined || curId === 'user') {
             continue;
           }
-          if( this.alreadyUpdatedCars.get(curId) !== undefined ){
+          if (this.alreadyUpdatedCars.get(curId) !== undefined) {
             // уже обновляли эту машину
             continue;
           }
-          this._checkAndMoveCar( i, j, curId, freePatchesToMove );
+          this._checkAndMoveCar(i, j, curId, freePatchesToMove);
         }
       }
       this._generateCarsOnUpdate();
+    }
+
+    _getLines() {
+        return (this._lines > this.NUMBER_OF_LANES || this._lines === undefined) ? this.NUMBER_OF_LANES : this._lines;
+    }
+
+    _getPatchesAhead() {
+        return this._patchesAhead < this.MINIMUM_PATCHES_AHEAD ? this._patchesAhead : this.MINIMUM_PATCHES_AHEAD;
+    }
+
+    _getPatchesBehind() {
+        return this._patchesBehind < this.MINIMUM_PATCHES_BEHIND ? this._patchesBehind : this.MINIMUM_PATCHES_BEHIND;
     }
 
     _checkLaneToNewCar(patch, lane){
