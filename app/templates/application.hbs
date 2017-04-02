@@ -1,5 +1,36 @@
-{{!-- The following component displays Ember's default welcome message. --}}
-{{welcome-page}}
-{{!-- Feel free to remove this! --}}
-
-{{outlet}}
+<div class="container" style="margin: 0em; padding: 0em; min-width: 700px">
+  <div class="row">
+      <div class="navbar-header" >
+          <ul class="nav nav-pills nav-tabs nav-stacked" style="border: 0; padding-left: 10px">
+              <li>
+                    {{#link-to 'index'}}
+                        <img src="../node_modules/octicons/build/svg/home.svg" style="width: 2.5em"/>
+                    {{/link-to}}
+              </li>
+              <li>
+                    {{#link-to 'leaderboard'}}
+                        <img src="../node_modules/octicons/build/svg/list-ordered.svg" style="width: 2.5em"/>
+                    {{/link-to}}
+              </li>
+              <li>
+                    {{#link-to 'about'}}
+                        <img src="../node_modules/octicons/build/svg/info.svg" style="width: 2.5em"/>
+                    {{/link-to}}
+              </li>
+              <li>
+                    {{#link-to 'resources'}}
+                        <img src="../node_modules/octicons/build/svg/globe.svg" style="width: 2.5em"/>
+                    {{/link-to}}
+              </li>
+              <li>
+                    {{#link-to 'contacts'}}
+                        <img src="../node_modules/octicons/build/svg/comment.svg" style="width: 2.5em"/>
+                    {{/link-to}}
+              </li>
+          </ul>
+      </div>
+      <div class="col-xl-11 col-lg-11 col-md-10 col-sm-10 col-xs-9">
+          {{outlet}}
+      </div>
+  </div>
+</div>

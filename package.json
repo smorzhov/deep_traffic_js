@@ -15,12 +15,14 @@
     "test": "ember test"
   },
   "devDependencies": {
+    "bootstrap": "^4.0.0-alpha.6",
     "broccoli-asset-rev": "^2.4.5",
     "devtron": "^1.4.0",
     "electron": "^1.4.15",
     "electron-packager": "^8.5.2",
     "electron-rebuild": "^1.5.7",
     "ember-ajax": "^2.4.1",
+    "ember-bootstrap": "1.0.0-alpha.5",
     "ember-cli": "2.11.1",
     "ember-cli-app-version": "^2.0.0",
     "ember-cli-babel": "^5.1.7",
@@ -103,5 +105,8 @@
   },
   "dependencies": {
     "convnetjs": "^0.3.0"
+    "monaco-editor": "^0.8.3",
+    "monaco-loader": "^0.8.2",
+    "octicons": "^5.0.1"
   }
 }
