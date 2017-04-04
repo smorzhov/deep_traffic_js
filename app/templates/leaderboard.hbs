@@ -1,6 +1,21 @@
 <div>
     <h2>Leaderboard</h2>
-    <div>
-        Table with score
+    <div class="table table-striped table-hover dt-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>MPH</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{#each model as |item|}}
+        <tr>
+            <td>{{item.user}}</td>
+            <td>{{item.mph}}</td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
     </div>
 </div>

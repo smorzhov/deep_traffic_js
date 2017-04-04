@@ -104,7 +104,7 @@
     }
   },
   "dependencies": {
-    "convnetjs": "^0.3.0"
+    "convnetjs": "^0.3.0",
     "monaco-editor": "^0.8.3",
     "monaco-loader": "^0.8.2",
     "octicons": "^5.0.1"
