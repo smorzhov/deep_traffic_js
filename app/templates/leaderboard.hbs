@@ -4,13 +4,15 @@
     <table class="table">
         <thead>
             <tr>
+                <th>Rank</th>
                 <th>User</th>
                 <th>MPH</th>
             </tr>
         </thead>
         <tbody>
-        {{#each model as |item|}}
+        {{#each model as |item index|}}
         <tr>
+            <td>{{increased_index index}}</td>
             <td>{{item.user}}</td>
             <td>{{item.mph}}</td>
         </tr>
