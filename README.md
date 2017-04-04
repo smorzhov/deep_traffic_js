@@ -14,8 +14,8 @@ You will need the following things properly installed on your computer.
 
 ## Installation
 
-* `git clone https://github.com/smorzhov/deep_traffic` this repository
-* `cd deep-traffic`
+* `git clone https://github.com/smorzhov/deep_traffic.git` this repository
+* `cd deep_traffic`
 * `npm install`
 * `bower install`
 

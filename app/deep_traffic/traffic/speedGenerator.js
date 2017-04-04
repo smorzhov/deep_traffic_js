@@ -1,6 +1,6 @@
 'use strict';
 
-import { getRandomInt } from './utils/random';
+import { getRandomInt } from './../utils/random';
 import Speed from './speed';
 
 export default class SpeedGenerator {

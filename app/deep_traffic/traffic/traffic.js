@@ -3,8 +3,8 @@
 import Car from './car';
 import Direction from './direction';
 import SpeedGenerator from './speedGenerator';
-import { getRandomInt } from './utils/random';
-import { readFileSync } from './utils/io';
+import { getRandomInt } from './../utils/random';
+import { readFileSync } from './../utils/io';
 
 export default class Traffic {
     /**
