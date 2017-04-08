@@ -6,13 +6,14 @@ export default Ember.Component.extend({
     didInsertElement() {
         const _loader = require('monaco-loader');
         let code = this.get('monaco').getCode();
+        let editor;
         _loader().then((monaco) => {
-            let editor = monaco.editor.create(document.getElementById('container'), {
+            editor = monaco.editor.create(document.getElementById('container'), {
                 language: 'javascript',
                 theme: 'vs',
                 automaticLayout: true,
                 value: [code].join("\n")
             });
-    });
-  }
+        });
+    }
 });
