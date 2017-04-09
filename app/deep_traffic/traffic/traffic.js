@@ -288,7 +288,7 @@ export default class Traffic {
       return;
     }
     for (let i = 0; i < this.CAR_SIZE; i++) {
-      this._state[curPatch + patchesToMove - i][lane] = this._state[curPatch - i][lane];
+      this._state[lane][curPatch + patchesToMove - i] = this._state[lane][curPatch - i];
     }
     // теперь нужно за собой убрать
 
@@ -301,7 +301,7 @@ export default class Traffic {
       patchesEnd = curPatch + patchesToMove;
     }
     for (let i = patchesBegin; i > patchesEnd; i--) {
-      this._state[i][lane] = 0;
+      this._state[lane][i] = 0;
     }
   }
   _getPatchesAheadToMap() {
@@ -341,7 +341,7 @@ export default class Traffic {
 
   _checkBehindDirection(patch, patchesSpeed) {
     // сзади всегда не меньше, чем safe distance патчей
-    if (this._checkPatch(patch + patchesSpeed)) {
+    if (!this._checkPatch(patch + patchesSpeed)) {
       return "OutOfPatch";
     }
     else {
@@ -370,8 +370,8 @@ export default class Traffic {
     let result = this._checkAheadDirection(patch, lane, patchesSpeed);
     if (result === 'OK') {
       this._moveCar(patchesSpeed, lane, patch);
-      this._car.get(carID).distance += patchesSpeed;
-      this._car.get(carID).car.changeSpeed();
+      this._cars.get(carID).distance += patchesSpeed;
+      this._cars.get(carID).car.changeSpeed();
       this._alreadyUpdatedCars.set(carID, true);
     }
     else if (result === 'OutOfPatch') {
@@ -393,7 +393,7 @@ export default class Traffic {
     if (result === 'OK') {
       // сдигаем машину
       this._moveCar(patchesSpeed, lane, patch);
-      this._car.get(carID).distance += patchesSpeed;
+      this._cars.get(carID).distance += patchesSpeed;
       this._alreadyUpdatedCars.set(carID, true);
     }
     else if (result === 'OutOfPatch') {
@@ -425,7 +425,7 @@ export default class Traffic {
       return false;
     }
     for (let i = distanceBegin; i > distanceEnd; i--) {
-      if (this._speed[i][lane] !== undefined || this._speed[i][lane] !== 0) {
+      if (this._state[lane][i] !== undefined || this._state[lane][i] !== 0) {
         return false;
       }
     }
@@ -447,8 +447,8 @@ export default class Traffic {
       this._state[i][newLane] = this._state[i + speed][lane];
       this._state[i + speed][lane] = 0;
     }
-    this._car.get(curID).lane = newLane;
-    this._car.get(curID).distance += speed;
+    this._cars.get(curID).lane = newLane;
+    this._cars.get(curID).distance += speed;
   }
 
   _checkAndMoveCar(patch, lane, carID) {
@@ -526,7 +526,7 @@ export default class Traffic {
 
   _checkLaneToNewCar(patch, lane) {
     for (let i = patch; i > patch - this.CAR_SIZE - this.SAFE_DISTANCE; i--) {
-      if (this._state[i][lane] !== 0 || this._state[i][lane] !== undefined) {
+      if (this._state[lane][i] !== 0 || this._state[lane][i] !== undefined) {
         return false;
       }
     }
