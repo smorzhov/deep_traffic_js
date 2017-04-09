@@ -2,15 +2,16 @@
 
 import Direction from './direction';
 import Speed from './speed';
+import { getRandomInt } from './../utils/random';
 
 export default class Car {
     /**
      * Car constructor
      * @constructor
      * @throws Will throw the error if the given parameters have inappropriate types
-     * @param {boolean} isUser shows whether the car is user's of not  
-     * @param {Speed} speed car's speed 
-     * @param {Direction} direction direction distribution 
+     * @param {boolean} isUser shows whether the car is user's of not
+     * @param {Speed} speed car's speed
+     * @param {Direction} direction direction distribution
      */
     constructor(isUser, speed, direction) {
         if (typeof isUser !== 'boolean') {
@@ -37,8 +38,8 @@ export default class Car {
      */
     get direction() {
         let n = Math.random();
-        let sum = 0.0;
-        for (let element in this._direction.distribution) {
+        let sum = 0;
+        for (let element of this._direction.distribution) {
             if (n > sum && n <= sum + element.probability) {
                 return element.direction;
             }

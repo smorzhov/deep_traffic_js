@@ -48,7 +48,7 @@ export default class Direction {
      * It checks whether the given parameter is a valid number between 0 and 1
      * @static
      * @throws Will throw an error if param is not a valid number
-     * @param {sring} type param type 
+     * @param {sring} type param type
      * @param {number} param parameter that will be checked
      * @return {number} param converted to number type
      */

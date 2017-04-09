@@ -13,8 +13,10 @@ export default class Traffic {
    * @throws It throws error if the given parameters have incorrect data or if traffic_constant.json file has not been found.
    */
   constructor() {
-    this._constants = readFileSync('./constants.json', 'utf8');
-    if (!this._isTrafficConstantsValid(this._constants.traffic)) {
+    let constants = readFileSync('./app/deep_traffic/traffic/constants.json', 'utf8');
+    this._constants = JSON.parse(constants);
+    let traffic = this._constants.traffic;
+    if (!this._isTrafficConstantsValid(traffic)) {
       throw new Error('constants.json has incorrect traffic data!');
     }
     this._speedGenerator = new SpeedGenerator(this._constants.speedPatchRatio);
@@ -141,21 +143,20 @@ export default class Traffic {
      */
     function isPatchValid(patch) {
       return !(patch === undefined || typeof patch.minimum !== 'number' || typeof patch.maximum !== 'number' ||
-        patch.minimum > 0 || patch.maximum > 0 || patch.minimum > patch.maximum);
+        patch.minimum < 0 || patch.maximum < 0 || patch.minimum > patch.maximum);
     }
 
     return !(traffic === undefined || traffic.patches === undefined ||
       typeof traffic.numberOfLanes !== 'number' ||
-      traffic.numberOfLanes < 1 || traffic.maximumNumberOfLanes > 100 |
-      typeof traffic.straightProbability !== 'number' ||
+      traffic.numberOfLanes < 1 || typeof traffic.straightProbability !== 'number' ||
       traffic.straightProbability < 0 || traffic.straightProbability > 1 ||
       typeof traffic.carSize !== 'number' ||
       traffic.carSize < 0 ||
       typeof traffic.safeDistance !== 'number' ||
       traffic.safeDistance < 0 ||
-      !isPatchValid(traffic.patches.ahead) || !isPatchValid(traffic.patches.behind) ||
+      !isPatchValid(traffic.patches.ahead) || !isPatchValid(traffic.patches.behind) /*||
       traffic.patches.ahead.minimum + traffic.patches.behind.minimum <= traffic.safeDistance ||
-      traffic.patches.ahead.minimum + traffic.patches.behind.minimum > traffic.carSize);
+      traffic.patches.ahead.minimum + traffic.patches.behind.minimum > traffic.carSize*/);
   }
 
   /**
@@ -171,46 +172,83 @@ export default class Traffic {
      * let state = new Array(size);
      */
     let state = [];
+    //let state = new Array(size);
     this.newCarProbability = 0.2;
     state.length = this.NUMBER_OF_LANES;
     let traffic = new Map();
     let maximumDistance = (patchesAhead + patchesBehind) / 3;
     let id = 10;
-    state.forEach((lane, laneNumber) => {
-      lane = [];
-      lane.length = patchesAhead + patchesBehind;
-      if (laneNumber === this._usersCar.lane) {
-        /**We're adding the user's car */
-        traffic.set('user', this._usersCar);
-        this._putCarIntoStateArray(state, 'user', this._usersCar.lane, this._usersCar.patch);
-      } else {
-        let distance;
-        let stop = false;
-        while (!stop) {
-          let max = distance === undefined ?
-            getRandomInt(patchesAhead, patchesAhead - maximumDistance) - this.SAFE_DISTANCE :
-            distance - this.SAFE_DISTANCE;
-          let min = max - maximumDistance;
-          if (min < -patchesBehind + this.CAR_SIZE) {
-            min = -patchesBehind + this.CAR_SIZE;
-            stop = true;
-          }
-          if (Math.abs(max - min) <= this.CAR_SIZE) {
-            break;
-          }
-          distance = getRandomInt(max, min);
-          this._putCarIntoStateArray(state, id, laneNumber, distance);
-          traffic.set(
-            id++,
-            {
-              car: new Car(false, this._speedGenerator.generate(), Direction.generate(this.STRAIGHT_PROBABILITY)),
-              lane: laneNumber,
-              distance: distance
+    // state.forEach((lane, laneNumber, state) => {
+    //   lane = [];
+    //   lane.length = patchesAhead + patchesBehind;
+    //   if (laneNumber === this._usersCar.lane) {
+    //     /**We're adding the user's car */
+    //     traffic.set('user', this._usersCar);
+    //     this._putCarIntoStateArray(state, 'user', this._usersCar.lane, this._usersCar.patch);
+    //   } else {
+    //     let distance;
+    //     let stop = false;
+    //     while (!stop) {
+    //       let max = distance === undefined ?
+    //         getRandomInt(patchesAhead, patchesAhead - maximumDistance) - this.SAFE_DISTANCE :
+    //         distance - this.SAFE_DISTANCE;
+    //       let min = max - maximumDistance;
+    //       if (min < -patchesBehind + this.CAR_SIZE) {
+    //         min = -patchesBehind + this.CAR_SIZE;
+    //         stop = true;
+    //       }
+    //       if (Math.abs(max - min) <= this.CAR_SIZE) {
+    //         break;
+    //       }
+    //       distance = getRandomInt(max, min);
+    //       this._putCarIntoStateArray(state, id, laneNumber, distance);
+    //       traffic.set(
+    //         id++,
+    //         {
+    //           car: new Car(false, this._speedGenerator.generate(), Direction.generate(this.STRAIGHT_PROBABILITY)),
+    //           lane: laneNumber,
+    //           distance: distance
+    //         }
+    //       );
+    //     }
+    //   }
+    // });
+    for( let laneNumber=0; laneNumber < this.NUMBER_OF_LANES; laneNumber++ ){
+        let lane = [];
+        lane.length = patchesAhead + patchesBehind;
+        state[laneNumber] = lane;
+        if (laneNumber === this._usersCar.lane) {
+          /**We're adding the user's car */
+          traffic.set('user', this._usersCar);
+          this._putCarIntoStateArray(state, 'user', this._usersCar.lane, this._usersCar.patch);
+        } else {
+          let distance;
+          let stop = false;
+          while (!stop) {
+            let max = distance === undefined ?
+              getRandomInt(patchesAhead, patchesAhead - maximumDistance) - this.SAFE_DISTANCE :
+              distance - this.SAFE_DISTANCE;
+            let min = max - maximumDistance;
+            if (min < -patchesBehind + this.CAR_SIZE) {
+              min = -patchesBehind + this.CAR_SIZE;
+              stop = true;
             }
-          );
+            if (Math.abs(max - min) <= this.CAR_SIZE) {
+              break;
+            }
+            distance = getRandomInt(max, min);
+            this._putCarIntoStateArray(state, id, laneNumber, distance);
+            traffic.set(
+              id++,
+              {
+                car: new Car(false, this._speedGenerator.generate(), Direction.generate(this.STRAIGHT_PROBABILITY)),
+                lane: laneNumber,
+                distance: distance
+              }
+            );
+          }
         }
-      }
-    });
+    }
     this._newCarId = id + 1;
     return [traffic, state];
   }
@@ -225,7 +263,8 @@ export default class Traffic {
    */
   _putCarIntoStateArray(state, carId, lane, patch) {
     for (let i = 0; i < this.CAR_SIZE; i++) {
-      state[patch - i][lane] = carId;
+      //state[patch - i][lane] = carId;
+      state[lane][patch - i] = carId;
     }
   }
   _getPatchesAheadToLine() {
@@ -341,8 +380,8 @@ export default class Traffic {
     else if (result === 'NotSafeDistance' || result === 'OnlySafeDistance') {
       // ищем скорость машину перед этой
       let newSpeed = this._findCarAheadSpeed(patch, lane);
-      let userPatchesSpeed = this.getPatchesToMove(this._usersCar.car.speed);
-      let newSpeedPatches = this.getPatchesToMove(newSpeed);
+      let userPatchesSpeed = this._speedGenerator.getPatchesToMove(this._usersCar.car.speed);
+      let newSpeedPatches = this._speedGenerator.getPatchesToMove(newSpeed);
       this._cars.get(carID).car.changeSpeed(newSpeed);
       // а теперь сдивинемся назад
       this._moveBehind(patch, lane, newSpeedPatches - userPatchesSpeed, carID);
@@ -414,30 +453,30 @@ export default class Traffic {
 
   _checkAndMoveCar(patch, lane, carID) {
     // на сколько сдвинется машина пользователя
-    let userPatchesSpeed = this.getPatchesToMove(this._usersCar.car.speed);
-    let curCar = this._traffic.get(carID);
+    let userPatchesSpeed = this._speedGenerator.getPatchesToMove(this._usersCar.car.speed);
+    let curCar = this._cars.get(carID);
     // если текущей машины вдруг нет в map, то нужно почистить поле движения
     if (curCar === undefined) {
       // TODO
       // ПОЧИСТИТЬ ПОЛЕ ДВИЖЕНИЯ
     }
     // сменим скорость обратно
-    this._traffic.get(carID).changeSpeed();
+    this._cars.get(carID).car.changeSpeed();
     // на сколько должна сдвинуться текущая машина
-    let curPatchesSpeed = this.getPatchesToMove(curCar.car.speed);
+    let curPatchesSpeed = this._speedGenerator.getPatchesToMove(curCar.car.speed);
     let newDirection = curCar.car.direction;
     // проверям, можем ли перестроится на новую полосу
     if (newDirection === 'left' || newDirection === 'right') {
       let canMove = this._checkNewDirection(patch, lane, curPatchesSpeed - userPatchesSpeed, newDirection);
       if (canMove === true) {
         this._moveToNewLine(patch, lane, curPatchesSpeed - userPatchesSpeed, newDirection, carID);
-        this.alreadyUpdatedCars.set(carID, true);
+        this._alreadyUpdatedCars.set(carID, true);
         return;
       }
     }
     // теперь едем прямо
     if (curPatchesSpeed - userPatchesSpeed === 0) {
-      this.alreadyUpdatedCars.set(carID, true);
+      this._alreadyUpdatedCars.set(carID, true);
     }
     else if (curPatchesSpeed - userPatchesSpeed > 0) {
       this._moveAhead(patch, lane, curPatchesSpeed - userPatchesSpeed, carID);
@@ -459,11 +498,11 @@ export default class Traffic {
     for (let j = 0; j < this.NUMBER_OF_LANES; j++) {
       for (let i = patches_ahead; i > patches_behind; i--) {
         //текущая машина, которую будем обновлять
-        let curId = this._state[i][j];
+        let curId = this._state[j][i];
         if (curId === 0 || curId === undefined || curId === 'user') {
           continue;
         }
-        if (this.alreadyUpdatedCars.get(curId) !== undefined) {
+        if (this._alreadyUpdatedCars.get(curId) !== undefined) {
           // уже обновляли эту машину
           continue;
         }

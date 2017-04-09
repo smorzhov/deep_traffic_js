@@ -2,7 +2,9 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
     monaco: Ember.inject.service(),
-
+    /*model: function() {
+      return this;
+    },*/
     actions: {
         willTransition(transition) {
             let element = document.getElementById('container');

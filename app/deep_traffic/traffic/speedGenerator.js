@@ -52,10 +52,12 @@ export default class SpeedGenerator {
         if (!Array.isArray(speedPatchesRatio)) {
             return false;
         }
+        let rez = true;
         speedPatchesRatio.every(value => {
-            return typeof value.speed === 'number' && value.speed > 0 && value.speed < 110 &&
-                typeof value.patches === 'number' && value.patches > 0;
+            rez = rez && ( typeof value.speed === 'number' && value.speed > 0 && value.speed <= 110 &&
+                typeof value.patches === 'number' && value.patches > 0);
         });
+        return rez;
     }
 
     /**
@@ -64,7 +66,6 @@ export default class SpeedGenerator {
      * @return {number} количество патчей
      */
     getPatchesToMove(speed) {
-        let ratio = this._speedPatchesRatio.find(ratio => { return ratio.speed === speed; });
-        return ratio === undefined ? undefined : ratio.patches; 
+        return speed.patches;
     }
 }

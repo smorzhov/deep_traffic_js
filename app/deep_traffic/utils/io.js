@@ -9,7 +9,7 @@ const fs = require('fs');
  * @param {string} encoding file encoding
  * @return {Promise} Promise object
  */
-module.exports.readFileAsync = function (fileName, encoding) {
+ export function readFileAsync(fileName, encoding) {
     return new Promise((resolve, reject) => {
         fs.readFile(fileName, encoding, (error, content) => {
             if (error) {
@@ -27,6 +27,6 @@ module.exports.readFileAsync = function (fileName, encoding) {
  * @param {string} encoding file encoding
  * @return {string} file content
  */
-module.exports.readFileSync = function (fileName, encoding) {
+export  function readFileSync(fileName, encoding) {
     return fs.readFileSync(fileName, encoding);
 };

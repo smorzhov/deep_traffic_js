@@ -2,19 +2,19 @@
     "speedPatchRatio": [
         {
             "speed": 50,
-            "patches": 0.5
-        },
-        {
-            "speed": 70,
             "patches": 1
         },
         {
+            "speed": 70,
+            "patches": 2
+        },
+        {
             "speed": 90,
-            "patches": 1.5
+            "patches": 3
         },
         {
             "speed": 110,
-            "patches": 2
+            "patches": 4
         }
     ],
     "traffic": {
