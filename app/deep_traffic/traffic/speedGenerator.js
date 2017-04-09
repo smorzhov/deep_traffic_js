@@ -1,6 +1,6 @@
 'use strict';
 
-import { getRandomInt } from './../utils/random';
+import { getRandomInt } from './../../utils/random';
 import Speed from './speed';
 
 export default class SpeedGenerator {
@@ -52,20 +52,9 @@ export default class SpeedGenerator {
         if (!Array.isArray(speedPatchesRatio)) {
             return false;
         }
-        let rez = true;
-        speedPatchesRatio.every(value => {
-            rez = rez && ( typeof value.speed === 'number' && value.speed > 0 && value.speed <= 110 &&
-                typeof value.patches === 'number' && value.patches > 0);
+        return speedPatchesRatio.every(value => {
+            return typeof value.speed === 'number' && value.speed > 0 && value.speed <= 110 &&
+                typeof value.patches === 'number' && value.patches > 0;
         });
-        return rez;
-    }
-
-    /**
-     * По скорости возвращает количество патчей
-     * @param {number} speed скорость
-     * @return {number} количество патчей
-     */
-    getPatchesToMove(speed) {
-        return speed.patches;
     }
 }

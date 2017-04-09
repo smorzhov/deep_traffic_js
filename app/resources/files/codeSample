@@ -1,0 +1,50 @@
+// a few things don't have let in front of them - 
+//they update already existing letiables the game needs
+
+lanesSide = 0;
+patchesAhead = 1;
+patchesBehind = 0;
+trainIterations = 10000;
+
+let num_inputs = (lanesSide * 2 + 1) * (patchesAhead + patchesBehind);
+let num_actions = 5;
+let temporal_window = 3;
+let network_size = num_inputs * temporal_window + num_actions * temporal_window + num_inputs;
+
+let layer_defs = [];
+layer_defs.push({
+    type: 'input',
+    out_sx: 1,
+    out_sy: 1,
+    out_depth: network_size
+});
+layer_defs.push({
+    type: 'fc',
+    num_neurons: 1,
+    activation: 'relu'
+});
+layer_defs.push({
+    type: 'regression',
+    num_neurons: num_actions
+});
+
+let tdtrainer_options = {
+    learning_rate: 0.001,
+    momentum: 0.0,
+    batch_size: 64,
+    l2_decay: 0.01
+};
+
+let opt = {};
+opt.temporal_window = temporal_window;
+opt.experience_size = 3000;
+opt.start_learn_threshold = 500;
+opt.gamma = 0.7;
+opt.learning_steps_total = 10000;
+opt.learning_steps_burnin = 1000;
+opt.epsilon_min = 0.0;
+opt.epsilon_test_time = 0.0;
+opt.layer_defs = layer_defs;
+opt.tdtrainer_options = tdtrainer_options;
+
+brain = new deepqlearn.Brain(num_inputs, num_actions, opt);
