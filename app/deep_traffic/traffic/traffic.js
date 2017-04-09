@@ -505,7 +505,8 @@ export default class Traffic {
 
     _checkLaneToNewCar(patch, lane) {
         for (let i = patch; i > patch - this.CAR_SIZE - this.SAFE_DISTANCE; i--) {
-            if (this._state[lane][i] !== 0 || this._state[lane][i] !== undefined) {
+          let cur = this._state[lane][i];
+            if (this._state[lane][i] !== 0 && this._state[lane][i] !== undefined) {
                 return false;
             }
         }
@@ -514,7 +515,7 @@ export default class Traffic {
 
     _generateCarsOnUpdate() {
         // генерируем только когда число машин меньше какого-то числа
-        if (this._newCarProbability < Math.random()) {
+        if (this._newCarProbability > Math.random()) {
             // генерируем новую машину
             let car = new Car(false, this._speedGenerator.generate(), Direction.generate(this.STRAIGHT_PROBABILITY));
             let patchBegin = this._getPatchesAheadToMap();
@@ -524,14 +525,18 @@ export default class Traffic {
             // пытаемся найти для машины полосу
             let updateTryCount = 0;
             let lane = getRandomInt(0, this.NUMBER_OF_LANES);
-            while (updateTryCount < this.NUMBER_OF_LANES) {
+            let find = false;
+            while (updateTryCount < this.NUMBER_OF_LANES && find === false) {
                 updateTryCount++;
-                if (this._checkLaneToNewCar(this._getPatchesAheadToMap(), lane)) {
+                if (!(this._checkLaneToNewCar(patchBegin, lane))) {
                     // будем искать полосу
                     lane = getRandomInt(0, this.NUMBER_OF_LANES);
                 }
+                else{
+                  find = true;
+                }
             }
-            if (updateTryCount === this.NUMBER_OF_LANES) {
+            if (find === false) {
                 // не нашли
                 return;
             }
