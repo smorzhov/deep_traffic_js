@@ -21,6 +21,8 @@ export default class Agent {
         };
     }
 
+    get trainIterations() { return this._trainIterations; }
+
     /**
      * It initializes class variables
      * @param {string} code JS code that will be ran in the sandox to initialize some variables 

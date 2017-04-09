@@ -12,7 +12,8 @@ export default Ember.Component.extend({
                 language: 'javascript',
                 theme: 'vs',
                 automaticLayout: true,
-                value: [code].join("\n")
+                formatOnPaste: true,
+                value: code
             });
         });
     }

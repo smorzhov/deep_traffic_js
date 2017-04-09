@@ -60,6 +60,7 @@ export default class Traffic {
          * User's car distance must always be equal to 0. Therefore cars that are behind user's car will have negative distance
          * and cars that are ahead - positive distance.
          */
+        this._overtakenCars = 0; //Number of cars being overtaken by the user's car. It may be negative
         this._usersCar = {
             car: new Car(true, this._speedGenerator.MAXIMUM_SPEED, new Direction(1, 0, 0)),
             lane: getRandomInt(0, this.NUMBER_OF_LANES),
@@ -74,24 +75,22 @@ export default class Traffic {
     /**
      * It updates generated traffic and added new cars if necessary.
      * @param {number} action user's car next action (forward, back, left, right, none)
-     * @return {Array} Returns state
+     * @return {Object} Returns result object {action: , overtakenCars: , speed: }
      */
-    update(action = 1000) {
+    update(action = 4) {
+        let result = {
+            action: 'none',     //Action that will be REALLY performed by the user's car after update method
+            overtakenCars: 0,   //Number of cars being overtaken by the user's car on this iteration (it is not the this.overtakenCars)
+            speed: -1           //user's car speed
+        };
         if (this._usersCar === undefined || this._cars === undefined || this._state === undefined) {
             this.generate();
-            return this.state;
+            result.speed = this._usersCar.car.speed.speed;
+            return result;
         }
-        /**
-         * TODO.
-         * На основе одномерного массива обновить расположение машин в одномерном массиве и в Map.
-         * Если хотя бы часть машины скрылась за пределами экрана, то машина удаляется из массива и из Map.
-         * Добавление новых машин должно осуществляться случайным образом.
-         * Если скорость новой машины меньше, чем скорость пользовательской машины, то новая добавляется сверху,
-         * так как далее она будет ехать вниз.
-         * Если скорость новой машины больше скорости пользовательской машины, то новая машина добавляется cнизу,
-         * так как далее она будет ехать вверх.
-         */
         this._updateTraffic(getAction(action));
+        //TODO: обновить объект result
+        return result;
     }
 
     /**
