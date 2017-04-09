@@ -2,7 +2,6 @@
 
 import Direction from './direction';
 import Speed from './speed';
-import { getRandomInt } from './../utils/random';
 
 export default class Car {
     /**

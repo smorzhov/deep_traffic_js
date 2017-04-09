@@ -1,6 +1,7 @@
 /* jshint node: true */
 'use strict';
 
+//import fs from 'fs';
 const fs = require('fs');
 
 /**
@@ -9,7 +10,7 @@ const fs = require('fs');
  * @param {string} encoding file encoding
  * @return {Promise} Promise object
  */
- export function readFileAsync(fileName, encoding) {
+export function readFileAsync(fileName, encoding) {
     return new Promise((resolve, reject) => {
         fs.readFile(fileName, encoding, (error, content) => {
             if (error) {
@@ -18,7 +19,7 @@ const fs = require('fs');
             resolve(content);
         });
     });
-};
+}
 
 /**
  * It reads the file synchronously.
@@ -27,6 +28,6 @@ const fs = require('fs');
  * @param {string} encoding file encoding
  * @return {string} file content
  */
-export  function readFileSync(fileName, encoding) {
+export function readFileSync(fileName, encoding = 'utf8') {
     return fs.readFileSync(fileName, encoding);
-};
+}
