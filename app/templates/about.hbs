@@ -1,6 +1,39 @@
 <div>
     <h2>Deep trafic</h2>
     <div>
-        Some info about projects
+        <p>
+            DeepTraffic is a gamified simulation of typical highway traffic. Your task is to build a neural agent – more specifically design and train a neural network that performs well on high traffic roads. Your neural network gets to control one of the cars (displayed in red) and has to learn how to navigate efficiently to go as fast as possible. The car already comes with a safety system, so you don’t have to worry about the basic task of driving – the net only has to tell the car if it should accelerate/slow down or change lanes, and it will do so if that is possible without crashing into other cars.
+        </p>
+        <h2>
+            Owerview
+        </h2>
+        <p>
+            The page consists of three different areas: on the left you can find a real time simulation of the road, with different display options, using the current state of the net. On the upper half of the right side of the page there is a coding area where you can change the design of the neural network and below that you can find some information about the state of the neural network and also buttons to train and test it.
+        </p>
+        <p>
+            The simulation area shows some basic information like the current speed of the car and the number of cars that have been passed since you opened the site. It also allows you to change the way the simulation is displayed.
+        </p>
+        <p>
+            The simulation uses frames as an internal measure of time – so neither a slow computer, nor a slow net influences the result. The Simulation Speed setting lets you control how the simulation is displayed to you – using the Normal setting the simulation tries to draw the frames matching real time, so it waits if the actual calculation is going faster – Fast displays frames as soon as they are finished, which may be much faster.
+        </p>
+        <h2>
+            Training and Evaluation
+        </h2>
+        <p>
+            To train the neural network you have to press the Run Training button.
+        </p>
+        <p>
+            This will start training the neural network by running the simulation in a separate thread with about 30 times realtime speed and apply the trained net back to the visible simulation from time to time so you should be able to see immediate improvements (only if your net layout is any good of course).
+        </p>
+        <p>
+            The site also provides an evaluation button that is going to run exactly the same evaluation we are using for the competition.
+        </p>
+        <p>
+            The evaluation run also happens on a separate thread simulating 10 runs of about 30 minutes each. For each run it computes the average speed per run, and the final score will be the median speed of the 10 runs.
+        </p>
+        <p>
+            You have to keep in mind that your local evaluation only gives you an estimate of the actual score, as there is some random component involved in how the other cars behave. The relevant score the one we compute. (And we will also look at your code to see if there is any kind of cheating involved, which would get you banned – so don’t even try).
+        </p>
+        
     </div>
 </div>
