@@ -15,9 +15,27 @@
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align: start">
                     <input type="button" value="Apply code / Reset net" class="btn btn-primary">
                 </div>
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align: end">
-                    <input type="button" value="Subbmit model to competition" class="btn btn-primary">
+                {{#if userInputData}}
+                <div class="top-buffer col-sm-10">
+                    <form id="userForm" class="form-horizontal">
+                        <div class="form-group">
+                            <label id="userNick" class="col-md-2 col-sm-offset-2 control-label custom-form-label">Nick Name</label>
+                            {{input}}
+                        </div>
+                        <div class="form-group">
+                            <label id="userEmail" class="col-md-2 col-sm-offset-2 control-label custom-form-label">E-mail</label>
+                            {{input}}
+                        </div>
+                        <div class="col-sm-offset-5 col-sm-10">
+                            <button class="btn btn-sm btn-primary" {{action 'submitData'}}>Submit</button>
+                        </div>
+                    </form>
                 </div>
+                {{else}}
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align: end">
+                    <input type="button" id="submitModelButton" value="Submit model to competition" class="btn btn-primary" {{action 'showForm'}}>
+                </div>
+                {{/if}}
             </div>
         </div>
     </div>
