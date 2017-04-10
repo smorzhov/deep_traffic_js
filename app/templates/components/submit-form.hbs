@@ -2,15 +2,21 @@
     <div class="top-buffer col-sm-10">
         <form class="form-horizontal">
             <div class="form-group">
-                <label class="col-md-2 col-sm-offset-2 control-label custom-form-label">Nick Name</label>
+                <label class="col-md-2 col-sm-offset-1 control-label custom-form-label">Nick Name</label>
                 {{input value=userNick}}
+                {{#if nickIsInvalide}}
+                    <span class="label label-warning">Nick Name can't be blank</span>
+                {{/if}}
             </div>
             <div class="form-group">
-                <label class="col-md-2 col-sm-offset-2 control-label custom-form-label">E-mail</label>
+                <label class="col-md-2 col-sm-offset-1 control-label custom-form-label">E-mail</label>
                 {{input value=userEmail}}
+                {{#if emailIsInvalide}}
+                    <span class="label label-warning">This field must be a valid email address</span>
+                {{/if}}
             </div>
             <div class="col-sm-offset-3 col-sm-10">
-                <button class="btn btn-sm btn-primary col-sm-offset-1" {{action 'cancelSubmit'}}>Cancel</button>
+                <button class="btn btn-sm btn-primary" {{action 'cancelSubmit'}}>Cancel</button>
                 <button class="btn btn-sm btn-primary col-sm-offset-1" {{action 'submitData'}}>Submit</button>
             </div>
         </form>
