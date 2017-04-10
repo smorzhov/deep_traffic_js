@@ -43,6 +43,23 @@ export default class SpeedGenerator {
         return new Speed(this._speedPatchesRatio[i].speed, this._speedPatchesRatio[i].patches);
     }
 
+    getNewSpeed( curSpeed, increaseSpeed ){
+      let i = this._speedPatchesRatio.findIndex( value =>{
+        return value.speed === curSpeed;
+      } );
+      if( increaseSpeed ){
+        i++;
+      }
+      else{
+        i--;
+      }
+      if( i < 1 || i >= this._speedPatchesRatio.length ){
+        return undefined;
+      }
+      else{
+        return new Speed(this._speedPatchesRatio[i].speed, this._speedPatchesRatio[i].patches);
+      }
+    }
     /**
      * It validates speedPatchesRatio object
      * @param {Array} speedPatchesRatio array of speed patches ratio objects
