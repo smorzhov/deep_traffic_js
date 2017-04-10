@@ -12,6 +12,11 @@ export default Ember.Component.extend({
         this.set('cars', this.get('traffic').getCarsToShow());
         this.set('overtakenCars', this.get('traffic').getOvertakenCars());
         //this.updateCount();
+        //this.renderMy();
+        this.white = new Image();
+        this.white.src= '../app/resources/images/car-white-small.png';
+        this.red = new Image ();
+        this.red.src = '../app/resources/images/car-red-small.png';
     },
 
     updateCount: function () {
@@ -44,6 +49,22 @@ export default Ember.Component.extend({
             this.set('cars', this.get('traffic').getCarsToShow());
             let allOverTaken = this.get('overtakenCars');
             this.set('overtakenCars', allOverTaken + this.get('traffic').getOvertakenCars());
+            this.renderMy();
         }
+    },
+
+   renderMy: function (){
+      let canvas = document.getElementById('cars');
+      let context = canvas.getContext('2d');
+      let redCar=this.red;
+      let whiteCar=this.white;
+      this.cars.forEach(function(element) {
+        if (element.isUserCar){
+          context.drawImage(redCar, element.lane*30, element.patch*68);
+        }
+        else{
+          context.drawImage(whiteCar, element.lane*30, element.patch*68);
+        }
+      });
     }
 });
