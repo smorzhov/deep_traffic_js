@@ -3,7 +3,6 @@ import Traffic from './../deep_traffic/traffic/traffic';
 
 export default Ember.Controller.extend({
   //traffic: new Traffic(),
-    userInputData: false,
   init(){
     this._super(...arguments);
     let traffic = new Traffic();
@@ -12,17 +11,17 @@ export default Ember.Controller.extend({
   },
   actions: {
     showForm() {
-        this.set("userInputData", true);
+      this.set("userInputData", true);
     },
     submitData() {
-        let userEmail = this.get('userEmail');
-        let userNick = this.get('userNick');
-        $.ajax({
-            type: "POST",
-            url: "http://deep-traffic-server.azurewebsites.net/api/users",
-            data: { mph: 42, email: userEmail, user: userNick }
-        });
-        this.set("userInputData", false);
+      let userEmail = this.get('userEmail');
+      let userNick = this.get('userNick');
+      $.ajax({
+        type: "POST",
+        url: "http://deep-traffic-server.azurewebsites.net/api/users",
+        data: {mph: 42, email: userEmail, user: userNick}
+      });
+      this.set("userInputData", false);
     }
   }
 });
