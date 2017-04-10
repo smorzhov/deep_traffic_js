@@ -28,6 +28,9 @@ export default Ember.Service.extend({
       cars.push(car);
     });
     return cars;
+  },
+  getOvertakenCars(){
+    return this.get('traffic').OVERTAKEN_CARS();
   }
 });
 

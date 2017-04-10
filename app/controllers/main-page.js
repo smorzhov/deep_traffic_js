@@ -10,15 +10,7 @@ export default Ember.Controller.extend({
     this.set('traffic', traffic);
     this.traffic.update();
   },
-  /*reopen(){
-   let traffic = new Traffic();
-   this.set('traffic', traffic);
-   this.traffic.update();
-   },*/
   actions: {
-    updateTraffic() {
-      this.traffic.update();
-    },
     showForm() {
         this.set("userInputData", true);
     },

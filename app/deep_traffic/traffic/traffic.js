@@ -47,6 +47,9 @@ export default class Traffic {
 
     CARS(){return this._cars;}
 
+    OVERTAKEN_CARS(){ return this._overtakenCars; }
+
+
     /**
      * It generates traffic
      * @param {number} patchesAhead patches ahead the user's car
@@ -277,6 +280,7 @@ export default class Traffic {
         for (let i = patchesBegin; i > patchesEnd; i--) {
             this._state[lane][i] = 0;
         }
+        this._checkOvertakenCars(curPatch, curPatch + patchesToMove );
     }
 
     _getPatchesAheadToMap() {
@@ -427,6 +431,7 @@ export default class Traffic {
         }
         this._cars.get(curID).lane = newLane;
         this._cars.get(curID).distance += speed;
+        this._checkOvertakenCars(patch, patch + speed );
     }
 
     _checkAndMoveCar(patch, lane, carID) {
@@ -464,6 +469,17 @@ export default class Traffic {
         }
     }
 
+    _checkOvertakenCars( oldPatch, newPatch ){
+        if( oldPatch <= 0 && newPatch > 0 )
+        {
+          this._overtakenCars--;
+        }
+        else if( oldPatch >= 0 && newPatch < 0 )
+        {
+          this._overtakenCars++;
+        }
+    }
+
     /**
      * It updates traffic
      * @param {string} action user's car next action (forward, back, left, right, none)
@@ -471,6 +487,7 @@ export default class Traffic {
     _updateTraffic(action) {
         // TODO
         // СДВИНУТЬ МАШИНУ ПОЛЬЗОВАТЕЛЯ
+        this._overtakenCars = 0;
         // получаем границы для массива
         let patches_ahead = this._getPatchesAheadToMap();
         let patches_behind = this._getPatchesBehindToMap();
@@ -478,6 +495,7 @@ export default class Traffic {
         let freePatchesToMove = 0;
         // машины, которые уже обновили
         this._alreadyUpdatedCars = new Map();
+        this._alreadyUpdatedCars.set('user', true);
         for (let j = 0; j < this.NUMBER_OF_LANES; j++) {
             for (let i = patches_ahead; i > patches_behind; i--) {
                 //текущая машина, которую будем обновлять
