@@ -58,12 +58,31 @@ export default Ember.Component.extend({
       let context = canvas.getContext('2d');
       let redCar=this.red;
       let whiteCar=this.white;
+      let ahead = 50;
+      let behind = 10;
+      canvas.width = 210;
+      canvas.height = 1050;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      /*context.mozImageSmoothingEnabled = false;
+      context.webkitImageSmoothingEnabled = false;
+      context.msImageSmoothingEnabled = false;
+      context.imageSmoothingEnabled = false;*/
       this.cars.forEach(function(element) {
-        if (element.isUserCar){
-          context.drawImage(redCar, element.lane*30, element.patch*68);
+        let patch = null;
+        if( element.patch > 0 ){
+          patch = ahead - element.patch;
         }
         else{
-          context.drawImage(whiteCar, element.lane*30, element.patch*68);
+          patch = behind + ahead - element.patch;
+        }
+        if (element.isUserCar){
+          context.drawImage(redCar, element.lane*20, 44, 20, 44 );
+        }
+        else{
+          context.drawImage(whiteCar, element.lane*20, patch*44, 20, 44 );
+          //context.drawImage(whiteCar, 0, 0 );
+          // JS
+          //context.drawImage(whiteCar, 0, 0, 30, 68);
         }
       });
     }

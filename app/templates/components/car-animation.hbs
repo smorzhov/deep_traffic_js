@@ -1,4 +1,5 @@
-<canvas id="cars" style="width: 100%; border:1px solid grey;"></canvas>
+<canvas id="cars" style="width: 170px; height:720px ; border:1px solid grey;"></canvas>
+<input type="button" value="Update1" class="btn btn-primary" {{action 'updateCars'}}/>
 <div id="cars" style="width: 100%; height: 37em; border:1px solid grey;">
   {{#each cars as |car|}}
     <div>
@@ -9,7 +10,7 @@
     </div>
   {{/each}}
 </div>
-<input type="button" value="Update1" class="btn btn-primary" {{action 'updateCars'}}/>
+
 <div>
   {{overtakenCars}}
 </div>
