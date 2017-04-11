@@ -202,8 +202,8 @@ export default class Traffic {
                 let stop = false;
                 while (!stop) {
                     let max = distance === undefined ?
-                        getRandomInt(patchesAhead, patchesAhead - maximumDistance) - this.SAFE_DISTANCE :
-                        distance - this.SAFE_DISTANCE;
+                        getRandomInt(patchesAhead, patchesAhead - maximumDistance) - this.SAFE_DISTANCE:
+                        distance - this.SAFE_DISTANCE - this.CAR_SIZE - this.CAR_SIZE;
                     let min = max - maximumDistance;
                     if (min < -patchesBehind + this.CAR_SIZE) {
                         min = -patchesBehind + this.CAR_SIZE;
@@ -305,12 +305,12 @@ export default class Traffic {
         if (!this._checkPatch(patchBegin)) {
             return 'OutOfPatch';
         }
-        for (let i = patch; i > patch + this.SAFE_DISTANCE; i++) {
+        for (let i = patch + 1; i < patch + this.SAFE_DISTANCE + 1; i++) {
             if (this._state[lane][i] !== 0 && this._state[lane][i] !== undefined) {
                 return 'NotSafeDistance';
             }
         }
-        for (let i = patch + this.SAFE_DISTANCE; i < patchBegin + 1; i++) {
+        for (let i = patch + this.SAFE_DISTANCE + 1; i < patchBegin + 1; i++) {
             if (this._state[lane][i] !== 0 && this._state[lane][i] !== undefined) {
                 return 'OnlySafeDistance';
             }
@@ -323,7 +323,7 @@ export default class Traffic {
         if (!this._checkPatch(patch + patchesSpeed)) {
             return "OutOfPatch";
         }
-        for (let i = patch; i > patch + this.SAFE_DISTANCE; i++) {
+        for (let i = patch + 1; i < patch + this.SAFE_DISTANCE + 1; i++) {
             if (this._state[lane][i] !== 0 && this._state[lane][i] !== undefined) {
                 return 'NotSafeDistance';
             }
@@ -352,9 +352,11 @@ export default class Traffic {
     _moveAhead(patch, lane, patchesSpeed, carID) {
         let result = this._checkAheadDirection(patch, lane, patchesSpeed);
         if (result === 'OK') {
-            this._moveCar(patchesSpeed, lane, patch);
-            this._cars.get(carID).distance += patchesSpeed;
-            this._cars.get(carID).car.changeSpeed();
+            if( patchesSpeed !== 0 ) {
+              this._moveCar(patchesSpeed, lane, patch);
+              this._cars.get(carID).distance += patchesSpeed;
+              this._cars.get(carID).car.changeSpeed();
+            }
             this._alreadyUpdatedCars.set(carID, true);
         }
         else if (result === 'OutOfPatch') {

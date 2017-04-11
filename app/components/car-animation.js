@@ -2,10 +2,9 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
     traffic: Ember.inject.service('traffic'),
-    showCount: 1,
     cars: [],
     overtakenCars: 0,
-    
+
     init: function () {
         this._super();
         // Update the time.
@@ -17,16 +16,20 @@ export default Ember.Component.extend({
         this.white.src = '../app/resources/images/car-white-small.png';
         this.red = new Image();
         this.red.src = '../app/resources/images/car-red-small.png';
+        //this.renderMy();
+    },
+    didRender: function(){
+      this.updateCount();
     },
 
     updateCount: function () {
         let _this = this;
-        this.set('showCount', this.get('traffic').getCount());
         Ember.run.later(this, function () {
             _this.get('traffic').update();
             _this.set('cars', this.get('traffic').getCarsToShow());
+            this.renderMy();
             _this.updateCount();
-        }, 1000);
+        }, 2000);
     },
     /*actions: {
       show() {

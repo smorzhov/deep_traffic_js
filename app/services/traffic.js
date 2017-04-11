@@ -19,12 +19,13 @@ export default Ember.Service.extend({
     getCarsToShow() {
         let cars = [];
         let trafficToShow = this.get('traffic').cars;
-        trafficToShow.forEach(function (item) {
+        trafficToShow.forEach(function (item, key) {
             let car = {};
             car.isUserCar = item.car.isUser;
             car.patch = item.distance || item.patch;
             car.lane = item.lane;
             car.speed = item.car.speed.speed;
+            car.carID = key;
             cars.push(car);
         });
         return cars;
