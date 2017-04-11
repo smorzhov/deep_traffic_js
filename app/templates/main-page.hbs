@@ -9,8 +9,14 @@
                 {{monaco-editor code=usersCode}}
             </div>
             <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align: start">
-                    <input type="button" value="Apply code / Reset net" class="btn btn-primary">
+                <div class="col-md-3 text-left">
+                    <button class="btn btn-sm btn-primary" {{action 'applyCode'}}>Apply code / Reset net</button>
+                </div>
+                <div class="col-md-3 text-left">
+                    <button class="btn btn-sm btn-primary" {{action 'saveCode'}}>Save code / Net to file</button>
+                </div>
+                <div class="col-md-3 text-left">
+                    <button class="btn btn-sm btn-primary" {{action 'loadCode'}}>Load code / Net from file</button>
                 </div>
                 {{submit-form}}
             </div>
