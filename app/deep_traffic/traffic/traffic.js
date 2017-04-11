@@ -45,10 +45,9 @@ export default class Traffic {
 
     get CAR_SIZE() { return this._constants.traffic.carSize; }
 
-    CARS(){return this._cars;}
+    get cars() { return this._cars; }
 
-    OVERTAKEN_CARS(){ return this._overtakenCars; }
-
+    get overtakenCars() { return this._overtakenCars; }
 
     /**
      * It generates traffic
@@ -281,7 +280,7 @@ export default class Traffic {
         for (let i = patchesBegin; i > patchesEnd; i--) {
             this._state[lane][i] = 0;
         }
-        this._checkOvertakenCars(curPatch, curPatch + patchesToMove );
+        this._checkOvertakenCars(curPatch, curPatch + patchesToMove);
     }
 
     _getPatchesAheadToMap() {
@@ -325,9 +324,9 @@ export default class Traffic {
             return "OutOfPatch";
         }
         for (let i = patch; i > patch + this.SAFE_DISTANCE; i++) {
-          if (this._state[lane][i] !== 0 && this._state[lane][i] !== undefined) {
-            return 'NotSafeDistance';
-          }
+            if (this._state[lane][i] !== 0 && this._state[lane][i] !== undefined) {
+                return 'NotSafeDistance';
+            }
         }
         return "OK";
     }
@@ -373,7 +372,7 @@ export default class Traffic {
     }
 
     _moveBehind(patch, lane, patchesSpeed, carID) {
-        let result = this._checkBehindDirection(patch,lane, patchesSpeed);
+        let result = this._checkBehindDirection(patch, lane, patchesSpeed);
         if (result === 'OK') {
             // сдигаем машину
             this._moveCar(patchesSpeed, lane, patch);
@@ -381,14 +380,14 @@ export default class Traffic {
             this._alreadyUpdatedCars.set(carID, true);
         }
         else if (result === 'NotSafeDistance' || result === 'OnlySafeDistance') {
-          // ищем скорость машину перед этой
-          let newSpeed = this._findCarAheadSpeed(patch, lane);
-          let userPatchesSpeed = this._usersCar.car.speed.patches;
-          let newSpeedPatches = newSpeed.patches;
-          this._cars.get(carID).car.changeSpeed(newSpeed);
-          this._moveCar(newSpeedPatches-userPatchesSpeed, lane, patch);
-          this._cars.get(carID).distance += (newSpeedPatches-userPatchesSpeed);
-          this._alreadyUpdatedCars.set(carID, true);
+            // ищем скорость машину перед этой
+            let newSpeed = this._findCarAheadSpeed(patch, lane);
+            let userPatchesSpeed = this._usersCar.car.speed.patches;
+            let newSpeedPatches = newSpeed.patches;
+            this._cars.get(carID).car.changeSpeed(newSpeed);
+            this._moveCar(newSpeedPatches - userPatchesSpeed, lane, patch);
+            this._cars.get(carID).distance += (newSpeedPatches - userPatchesSpeed);
+            this._alreadyUpdatedCars.set(carID, true);
         }
         else if (result === 'OutOfPatch') {
             // TODO
@@ -445,7 +444,7 @@ export default class Traffic {
         }
         this._cars.get(curID).lane = newLane;
         this._cars.get(curID).distance += speed;
-        this._checkOvertakenCars(patch, patch + speed );
+        this._checkOvertakenCars(patch, patch + speed);
     }
 
     _checkAndMoveCar(patch, lane, carID) {
@@ -479,80 +478,77 @@ export default class Traffic {
             this._moveAhead(patch, lane, curPatchesSpeed - userPatchesSpeed, carID);
         }*/
         if (curPatchesSpeed - userPatchesSpeed >= 0) {
-          this._moveAhead(patch, lane, curPatchesSpeed - userPatchesSpeed, carID);
+            this._moveAhead(patch, lane, curPatchesSpeed - userPatchesSpeed, carID);
         }
         else {
             this._moveBehind(patch, lane, curPatchesSpeed - userPatchesSpeed, carID);
         }
     }
 
-    _checkOvertakenCars( oldPatch, newPatch ){
-        if( oldPatch <= 0 && newPatch > 0 )
-        {
-          this._overtakenCars--;
+    _checkOvertakenCars(oldPatch, newPatch) {
+        if (oldPatch <= 0 && newPatch > 0) {
+            this._overtakenCars--;
         }
-        else if( oldPatch >= 0 && newPatch < 0 )
-        {
-          this._overtakenCars++;
+        else if (oldPatch >= 0 && newPatch < 0) {
+            this._overtakenCars++;
         }
     }
 
-    _checkUserCarDirection( lane, userSpeed ){
-      for( let i = 1; i < this.SAFE_DISTANCE + 1; i++ ){
-        let curId = this._state[lane][i + this.SAFE_DISTANCE];
-        if (curId !== 0 || curId !== undefined){
-          let curSpeed = this._cars.get( curId ).car.speed.patch;
-          if( curSpeed - userSpeed < - i ){
-            return 'back';
-          }
-          else if( curSpeed - userSpeed > i ){
-            return 'forward';
-          }
-          else{
+    _checkUserCarDirection(lane, userSpeed) {
+        for (let i = 1; i < this.SAFE_DISTANCE + 1; i++) {
+            let curId = this._state[lane][i + this.SAFE_DISTANCE];
+            if (curId !== 0 || curId !== undefined) {
+                let curSpeed = this._cars.get(curId).car.speed.patch;
+                if (curSpeed - userSpeed < - i) {
+                    return 'back';
+                }
+                else if (curSpeed - userSpeed > i) {
+                    return 'forward';
+                }
+                else {
+                    return 'none';
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * @param action - направление движения машины
+     * @private реально выполненое действие
+     */
+    _moveUserCar(action) {
+        // смотрим, что нам предлагают выполнить
+        if (action === 'left' || action === 'right') {
+            if (this._checkNewDirection(0, this._usersCar.lane, 0, action)) {
+                this._moveToNewLine(0, this._usersCar.lane, 0, action, 'user');
+                this._usersCar.lane = this._cars.get('user').lane;
+                return action;
+            }
+        }
+        let newSpeed = this._speedGenerator.getNewSpeed(this._usersCar.car.speed.speed, true);
+        if (newSpeed === undefined) {
             return 'none';
-          }
         }
-      }
-    }
-
-  /**
-   *
-   * @param action - направление движения машины
-   * @private реально выполненое действие
-   */
-    _moveUserCar( action ){
-      // смотрим, что нам предлагают выполнить
-      if( action === 'left' || action === 'right' ){
-        if( this._checkNewDirection(0, this._usersCar.lane, 0, action) )
-        {
-          this._moveToNewLine(0,this._usersCar.lane, 0, action, 'user');
-          this._usersCar.lane = this._cars.get('user').lane;
-          return action;
+        let checkDirection = this._checkUserCarDirection(this._usersCar.lane, newSpeed.patch);
+        // теперь попробуем ускорится
+        if (checkDirection === 'forward') {
+            this._usersCar.car.speed = newSpeed;
+            this._cars.get('user').car.changeSpeed(newSpeed.speed);
+            return 'forward';
         }
-      }
-      let newSpeed = this._speedGenerator.getNewSpeed( this._usersCar.car.speed.speed, true );
-      if( newSpeed === undefined ){
-        return 'none';
-      }
-      let checkDirection = this._checkUserCarDirection( this._usersCar.lane, newSpeed.patch );
-      // теперь попробуем ускорится
-      if( checkDirection === 'forward'){
-          this._usersCar.car.speed = newSpeed;
-          this._cars.get('user').car.changeSpeed( newSpeed.speed );
-          return 'forward';
-      }
-      else if( checkDirection === 'back' ){
-        let lessSpeed = this._speedGenerator.getNewSpeed( this._usersCar.car.speed.speed, true );
-        if( lessSpeed === undefined ){
-          return 'none';
+        else if (checkDirection === 'back') {
+            let lessSpeed = this._speedGenerator.getNewSpeed(this._usersCar.car.speed.speed, true);
+            if (lessSpeed === undefined) {
+                return 'none';
+            }
+            this._usersCar.car.speed = lessSpeed;
+            this._cars.get('user').car.changeSpeed(lessSpeed.speed);
+            return 'back';
         }
-        this._usersCar.car.speed = lessSpeed;
-        this._cars.get('user').car.changeSpeed( lessSpeed.speed );
-        return 'back';
-      }
-      else{
-        return 'none'
-      }
+        else {
+            return 'none';
+        }
     }
 
     /**
@@ -560,32 +556,32 @@ export default class Traffic {
      * @param {string} action user's car next action (forward, back, left, right, none)
      */
     _updateTraffic(action) {
-      let resultAction = this._moveUserCar( action );
-      this._overtakenCars = 0;
-      // получаем границы для массива
-      let patches_ahead = this._getPatchesAheadToMap();
-      let patches_behind = this._getPatchesBehindToMap();
-      // количество патчей, на которые можем сдвинуться
-      let freePatchesToMove = 0;
-      // машины, которые уже обновили
-      this._alreadyUpdatedCars = new Map();
-      this._alreadyUpdatedCars.set('user', true);
-      for (let j = 0; j < this.NUMBER_OF_LANES; j++) {
-          for (let i = patches_ahead; i > patches_behind; i--) {
-              //текущая машина, которую будем обновлять
-              let carId = this._state[j][i];
-              if (carId === 0 || carId === undefined || carId === 'user') {
-                  continue;
-              }
-              if (this._alreadyUpdatedCars.get(carId) !== undefined) {
-                  // уже обновляли эту машину
-                  continue;
-              }
-              this._checkAndMoveCar(i, j, carId, freePatchesToMove);
-          }
-      }
-      this._generateCarsOnUpdate();
-      return resultAction;
+        let resultAction = this._moveUserCar(action);
+        this._overtakenCars = 0;
+        // получаем границы для массива
+        let patches_ahead = this._getPatchesAheadToMap();
+        let patches_behind = this._getPatchesBehindToMap();
+        // количество патчей, на которые можем сдвинуться
+        let freePatchesToMove = 0;
+        // машины, которые уже обновили
+        this._alreadyUpdatedCars = new Map();
+        this._alreadyUpdatedCars.set('user', true);
+        for (let j = 0; j < this.NUMBER_OF_LANES; j++) {
+            for (let i = patches_ahead; i > patches_behind; i--) {
+                //текущая машина, которую будем обновлять
+                let carId = this._state[j][i];
+                if (carId === 0 || carId === undefined || carId === 'user') {
+                    continue;
+                }
+                if (this._alreadyUpdatedCars.get(carId) !== undefined) {
+                    // уже обновляли эту машину
+                    continue;
+                }
+                this._checkAndMoveCar(i, j, carId, freePatchesToMove);
+            }
+        }
+        this._generateCarsOnUpdate();
+        return resultAction;
     }
 
     _getPatchesAhead() {
@@ -598,7 +594,7 @@ export default class Traffic {
 
     _checkLaneToNewCar(patch, lane) {
         for (let i = patch; i > patch - this.CAR_SIZE - this.SAFE_DISTANCE; i--) {
-          let cur = this._state[lane][i];
+            let cur = this._state[lane][i];
             if (this._state[lane][i] !== 0 && this._state[lane][i] !== undefined) {
                 return false;
             }
@@ -625,8 +621,8 @@ export default class Traffic {
                     // будем искать полосу
                     lane = getRandomInt(0, this.NUMBER_OF_LANES);
                 }
-                else{
-                  find = true;
+                else {
+                    find = true;
                 }
             }
             if (find === false) {

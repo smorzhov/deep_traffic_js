@@ -1,11 +1,11 @@
 import Ember from 'ember';
-import Traffic from './../deep_traffic/traffic/traffic';
 
 export default Ember.Component.extend({
     traffic: Ember.inject.service('traffic'),
     showCount: 1,
     cars: [],
     overtakenCars: 0,
+    
     init: function () {
         this._super();
         // Update the time.
@@ -14,8 +14,8 @@ export default Ember.Component.extend({
         //this.updateCount();
         //this.renderMy();
         this.white = new Image();
-        this.white.src= '../app/resources/images/car-white-small.png';
-        this.red = new Image ();
+        this.white.src = '../app/resources/images/car-white-small.png';
+        this.red = new Image();
         this.red.src = '../app/resources/images/car-red-small.png';
     },
 
@@ -53,37 +53,31 @@ export default Ember.Component.extend({
         }
     },
 
-   renderMy: function (){
-      let canvas = document.getElementById('cars');
-      let context = canvas.getContext('2d');
-      let redCar=this.red;
-      let whiteCar=this.white;
-      let ahead = 50;
-      let behind = 10;
-      canvas.width = 210;
-      canvas.height = 1050;
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      /*context.mozImageSmoothingEnabled = false;
-      context.webkitImageSmoothingEnabled = false;
-      context.msImageSmoothingEnabled = false;
-      context.imageSmoothingEnabled = false;*/
-      this.cars.forEach(function(element) {
-        let patch = null;
-        if( element.patch > 0 ){
-          patch = ahead - element.patch;
-        }
-        else{
-          patch = behind + ahead - element.patch;
-        }
-        if (element.isUserCar){
-          context.drawImage(redCar, element.lane*20, 44, 20, 44 );
-        }
-        else{
-          context.drawImage(whiteCar, element.lane*20, patch*44, 20, 44 );
-          //context.drawImage(whiteCar, 0, 0 );
-          // JS
-          //context.drawImage(whiteCar, 0, 0, 30, 68);
-        }
-      });
+    renderMy: function () {
+        let canvas = document.getElementById('cars');
+        let context = canvas.getContext('2d');
+        let redCar = this.red;
+        let whiteCar = this.white;
+        let ahead = this.get('traffic').getPatchesAhead();
+        let behind = this.get('traffic').getPatchesBehind();
+        let carHeight = 45;
+        let carWidth = 20;
+        let patchHeight = Math.floor(carHeight / 4);
+        let patchWidth = carWidth;
+        canvas.width = this.get('traffic').getNumberOfLanes() * patchWidth;
+        canvas.height = (ahead + behind) * patchHeight;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        /*context.mozImageSmoothingEnabled = false;
+        context.webkitImageSmoothingEnabled = false;
+        context.msImageSmoothingEnabled = false;
+        context.imageSmoothingEnabled = false;*/
+        this.cars.forEach((car) => {
+            let x = Math.abs(car.patch - ahead) * patchHeight;
+            if (car.isUserCar) {
+                context.drawImage(redCar, car.lane * patchWidth, x, carWidth, carHeight);
+            } else {
+                context.drawImage(whiteCar, car.lane * patchWidth, x, carWidth, carHeight);
+            }
+        });
     }
 });

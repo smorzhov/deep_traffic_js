@@ -7,7 +7,7 @@ export default Ember.Controller.extend({
         this._super(...arguments);
         let traffic = new Traffic();
         this.set('traffic', traffic);
-        this.traffic.update();
+        //this.traffic.update();
     },
     actions: {
     }
