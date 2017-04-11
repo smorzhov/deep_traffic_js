@@ -272,7 +272,7 @@ export default class Traffic {
         let patchesBegin = curPatch;
         let patchesEnd = curPatch - this.CAR_SIZE;
         if (patchesToMove > 0) {
-            patchesBegin = curPatch - patchesToMove;
+            patchesBegin = curPatch + patchesToMove;
         }
         else {
             patchesEnd = curPatch + patchesToMove;
@@ -284,11 +284,11 @@ export default class Traffic {
     }
 
     _getPatchesAheadToMap() {
-        return this._patchesAhead > this.MINIMUM_PATCHES_AHEAD ? this._patchesAhead : this.MINIMUM_PATCHES_AHEAD;
+        return this._patchesAhead > this.MINIMUM_PATCHES_AHEAD ? this._patchesAhead : this.MINIMUM_PATCHES_AHEAD ;
     }
 
     _getPatchesBehindToMap() {
-        return this._patchesBehind > this.MINIMUM_PATCHES_BEHIND ? - this._patchesBehind : - this.MINIMUM_PATCHES_BEHIND;
+        return this._patchesBehind > this.MINIMUM_PATCHES_BEHIND ? - this._patchesBehind : - this.MINIMUM_PATCHES_BEHIND ;
     }
 
     _checkPatch(curPatch) {
@@ -301,7 +301,7 @@ export default class Traffic {
     }
 
     _checkAheadDirection(patch, lane, patchesSpeed) {
-        let patchBegin = patch + patchesSpeed + this.SAFE_DISTANCE;
+        let patchBegin = patch + patchesSpeed + this.SAFE_DISTANCE + 1;
         if (!this._checkPatch(patchBegin)) {
             return 'OutOfPatch';
         }
@@ -332,9 +332,9 @@ export default class Traffic {
     }
 
     _findCarAheadSpeed(patch, lane) {
-        let patchesEnd = patch;
-        let patchesBegin = patchesEnd + this.SAFE_DISTANCE;
-        for (let i = patchesBegin; i > patchesEnd; i--) {
+        let patchesBegin = patch + 1;
+        let patchesEnd = patchesBegin + this.SAFE_DISTANCE + 1;
+        for (let i = patchesBegin; i < patchesEnd; i++) {
             if (this._state[lane][i] !== 0 && this._state[lane][i] !== undefined) {
                 return this._cars.get(this._state[lane][i]).car.speed;
             }
@@ -437,15 +437,16 @@ export default class Traffic {
             newLane++;
         }
         // откуда будем обновлять
-        let distanceBegin = patch - speed;
+        let distanceBegin = patch;
         //до куда будем обновлять
         let distanceEnd = distanceBegin - this.CAR_SIZE;
-        for (let i = distanceBegin; i > distanceBegin; i--) {
-            this._state[newLane][i] = this._state[lane][i + speed];
-            this._state[lane][i + speed] = 0;
+        for (let i = distanceBegin; i > distanceEnd; i--) {
+            this._state[newLane][ i + speed] = this._state[lane][i];
+            this._state[lane][i ] = 0;
         }
         this._cars.get(curID).lane = newLane;
         this._cars.get(curID).distance += speed;
+        this._cars.get(curID).changeLane = true;
         this._checkOvertakenCars(patch, patch + speed);
     }
 
@@ -459,7 +460,7 @@ export default class Traffic {
             // ПОЧИСТИТЬ ПОЛЕ ДВИЖЕНИЯ
         }
         // сменим скорость обратно
-        this._cars.get(carID).car.changeSpeed();
+       // this._cars.get(carID).car.changeSpeed();
         // на сколько должна сдвинуться текущая машина
         let curPatchesSpeed = curCar.car.speed.patches;
         let newDirection = curCar.car.direction;
@@ -473,12 +474,6 @@ export default class Traffic {
             }
         }
         // теперь едем прямо
-        /*if (curPatchesSpeed - userPatchesSpeed === 0) {
-            this._alreadyUpdatedCars.set(carID, true);
-        }
-        else if (curPatchesSpeed - userPatchesSpeed >= 0) {
-            this._moveAhead(patch, lane, curPatchesSpeed - userPatchesSpeed, carID);
-        }*/
         if (curPatchesSpeed - userPatchesSpeed >= 0) {
             this._moveAhead(patch, lane, curPatchesSpeed - userPatchesSpeed, carID);
         }
