@@ -202,7 +202,7 @@ export default class Traffic {
                 let stop = false;
                 while (!stop) {
                     let max = distance === undefined ?
-                        getRandomInt(patchesAhead, patchesAhead - maximumDistance) - this.SAFE_DISTANCE:
+                        getRandomInt(patchesAhead, patchesAhead - maximumDistance) - this.SAFE_DISTANCE :
                         distance - this.SAFE_DISTANCE - this.CAR_SIZE - this.CAR_SIZE;
                     let min = max - maximumDistance;
                     if (min < -patchesBehind + this.CAR_SIZE) {
@@ -284,11 +284,11 @@ export default class Traffic {
     }
 
     _getPatchesAheadToMap() {
-        return this._patchesAhead > this.MINIMUM_PATCHES_AHEAD ? this._patchesAhead : this.MINIMUM_PATCHES_AHEAD ;
+        return this._patchesAhead > this.MINIMUM_PATCHES_AHEAD ? this._patchesAhead : this.MINIMUM_PATCHES_AHEAD;
     }
 
     _getPatchesBehindToMap() {
-        return this._patchesBehind > this.MINIMUM_PATCHES_BEHIND ? - this._patchesBehind : - this.MINIMUM_PATCHES_BEHIND ;
+        return this._patchesBehind > this.MINIMUM_PATCHES_BEHIND ? - this._patchesBehind : - this.MINIMUM_PATCHES_BEHIND;
     }
 
     _checkPatch(curPatch) {
@@ -352,10 +352,10 @@ export default class Traffic {
     _moveAhead(patch, lane, patchesSpeed, carID) {
         let result = this._checkAheadDirection(patch, lane, patchesSpeed);
         if (result === 'OK') {
-            if( patchesSpeed !== 0 ) {
-              this._moveCar(patchesSpeed, lane, patch);
-              this._cars.get(carID).distance += patchesSpeed;
-              this._cars.get(carID).car.changeSpeed();
+            if (patchesSpeed !== 0) {
+                this._moveCar(patchesSpeed, lane, patch);
+                this._cars.get(carID).distance += patchesSpeed;
+                this._cars.get(carID).car.changeSpeed();
             }
             this._alreadyUpdatedCars.set(carID, true);
         }
@@ -386,10 +386,15 @@ export default class Traffic {
             let newSpeed = this._findCarAheadSpeed(patch, lane);
             let userPatchesSpeed = this._usersCar.car.speed.patches;
             let newSpeedPatches = newSpeed.patches;
-            this._cars.get(carID).car.changeSpeed(newSpeed);
-            this._moveCar(newSpeedPatches - userPatchesSpeed, lane, patch);
-            this._cars.get(carID).distance += (newSpeedPatches - userPatchesSpeed);
-            this._alreadyUpdatedCars.set(carID, true);
+            if (this._checkPatch(patch + newSpeedPatches - userPatchesSpeed)) {
+                this._cars.get(carID).car.changeSpeed(newSpeed);
+                this._moveCar(newSpeedPatches - userPatchesSpeed, lane, patch);
+                this._cars.get(carID).distance += (newSpeedPatches - userPatchesSpeed);
+                this._alreadyUpdatedCars.set(carID, true);
+            }
+            else {
+                this._deleteCar(patch, lane, carID);
+            }
         }
         else if (result === 'OutOfPatch') {
             // TODO
@@ -441,8 +446,8 @@ export default class Traffic {
         //до куда будем обновлять
         let distanceEnd = distanceBegin - this.CAR_SIZE;
         for (let i = distanceBegin; i > distanceEnd; i--) {
-            this._state[newLane][ i + speed] = this._state[lane][i];
-            this._state[lane][i ] = 0;
+            this._state[newLane][i + speed] = this._state[lane][i];
+            this._state[lane][i] = 0;
         }
         this._cars.get(curID).lane = newLane;
         this._cars.get(curID).distance += speed;
@@ -460,7 +465,7 @@ export default class Traffic {
             // ПОЧИСТИТЬ ПОЛЕ ДВИЖЕНИЯ
         }
         // сменим скорость обратно
-       // this._cars.get(carID).car.changeSpeed();
+        // this._cars.get(carID).car.changeSpeed();
         // на сколько должна сдвинуться текущая машина
         let curPatchesSpeed = curCar.car.speed.patches;
         let newDirection = curCar.car.direction;

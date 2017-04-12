@@ -18,7 +18,7 @@ export default Ember.Component.extend({
         this.red.src = '../app/resources/images/car-red-small.png';
         //this.renderMy();
     },
-    didRender: function(){
+    /*didRender: function(){
       this.updateCount();
     },
 
@@ -27,10 +27,12 @@ export default Ember.Component.extend({
         Ember.run.later(this, function () {
             _this.get('traffic').update();
             _this.set('cars', this.get('traffic').getCarsToShow());
+            let allOverTaken = this.get('overtakenCars');
+            this.set('overtakenCars', allOverTaken + this.get('traffic').getOvertakenCars());
             this.renderMy();
             _this.updateCount();
-        }, 2000);
-    },
+        }, 100);
+    },*/
     /*actions: {
       show() {
         this.set('showCount', this.get('traffic').getCount());
