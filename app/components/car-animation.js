@@ -32,7 +32,7 @@ export default Ember.Component.extend({
             this.renderMy();
             _this.updateCount();
         }, 100);
-    },*/
+    },*/    
     /*actions: {
       show() {
         this.set('showCount', this.get('traffic').getCount());

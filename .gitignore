@@ -45,6 +45,8 @@ bower_components
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
+electron-builds
+*.zip
 
 # Dependency directories
 node_modules/
